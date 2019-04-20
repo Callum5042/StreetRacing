@@ -1,10 +1,12 @@
-﻿namespace StreetRacing.Source.Cars.Tasks
+﻿using StreetRacing.Source.Vehicles;
+
+namespace StreetRacing.Source.Tasks
 {
     public class DriverTaskNone : IDriverTask
     {
         public DriverTask DriverTask => DriverTask.None;
 
-        public void Handle(RacingCar racingCar)
+        public void Handle(IRacingVehicle vehicle)
         {
         }
     }

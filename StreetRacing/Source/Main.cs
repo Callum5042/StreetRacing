@@ -12,11 +12,12 @@ namespace StreetRacing
 {
     public class Main : Script
     {
+        private MenuPool menuPool;
         private bool isActive = true;
+        private bool allowSpawn = true;
+        private int numberOfVehicles = 4;
 
         private IRace race;
-
-        private MenuPool menuPool;
 
         public Main()
         {
@@ -30,11 +31,13 @@ namespace StreetRacing
             var mainMenu = new UIMenu("Street Racing", "Options");
             menuPool.Add(mainMenu);
             AddMenuActive(mainMenu);
-            AddMenuFoods(mainMenu);
-            AddMenuCook(mainMenu);
-            AddMenuAnotherMenu(mainMenu);
-            menuPool.RefreshIndex();
-            
+            AddMenuAllowSpawns(mainMenu);
+            AddMenuNumberOfVehicles(mainMenu);
+            //AddMenuFoods(mainMenu);
+            //AddMenuCook(mainMenu);
+            //AddMenuAnotherMenu(mainMenu);
+            //menuPool.RefreshIndex();
+
             KeyDown += (o, e) =>
             {
                 if (e.KeyCode == Keys.F8 && !menuPool.IsAnyMenuOpen()) // Our menu on/off switch
@@ -69,11 +72,11 @@ namespace StreetRacing
                     case Keys.E:
                         if (Game.IsWaypointActive)
                         {
-                            race = new SprintRace();
+                            // race = new SprintRace();
                         }
                         else
                         {
-                            race = new DistanceRace();
+                            race = new DistanceRace(allowSpawn, numberOfVehicles);
                         }
                         break;
                 }
@@ -94,6 +97,42 @@ namespace StreetRacing
                 {
                     isActive = @checked;
                 }
+            };
+        }
+
+        public void AddMenuAllowSpawns(UIMenu menu)
+        {
+            var newitem = new UIMenuCheckboxItem("Allow Spawning", allowSpawn, "Spawns a racing vehicle");
+            menu.AddItem(newitem);
+            menu.OnCheckboxChange += (sender, item, @checked) =>
+            {
+                if (item == newitem)
+                {
+                    allowSpawn = @checked;
+                }
+            };
+        }
+
+        private void AddMenuNumberOfVehicles(UIMenu menu)
+        {
+            var number = new List<dynamic>
+            {
+                1,
+                2,
+                3,
+                4,
+                5
+            };
+
+            var newitem = new UIMenuListItem("Food", number, 0);
+            menu.AddItem(newitem);
+            menu.OnListChange += (sender, item, index) =>
+            {
+                if (item == newitem)
+                {
+                    numberOfVehicles = (int)item.IndexToItem(index);
+                }
+
             };
         }
 

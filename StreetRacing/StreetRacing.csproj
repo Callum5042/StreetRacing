@@ -49,18 +49,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Cars\Tasks\DriverTask.cs" />
-    <Compile Include="Source\Cars\Tasks\DriverTaskChase.cs" />
-    <Compile Include="Source\Cars\Tasks\DriverTaskNone.cs" />
-    <Compile Include="Source\Cars\Tasks\IDriverTask.cs" />
-    <Compile Include="Source\Cars\Tasks\DriverTaskCruise.cs" />
+    <Compile Include="Source\Tasks\DriverTask.cs" />
+    <Compile Include="Source\Tasks\DriverTaskChase.cs" />
+    <Compile Include="Source\Tasks\DriverTaskNone.cs" />
+    <Compile Include="Source\Tasks\IDriverTask.cs" />
+    <Compile Include="Source\Tasks\DriverTaskCruise.cs" />
     <Compile Include="Source\Races\DistanceRace.cs" />
     <Compile Include="Source\Races\IRace.cs" />
     <Compile Include="Source\Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Races\Race.cs" />
-    <Compile Include="Source\Cars\RacingCar.cs" />
-    <Compile Include="Source\Races\SprintRace.cs" />
+    <Compile Include="Source\Vehicles\IRacingVehicle.cs" />
+    <Compile Include="Source\Vehicles\NearbyRacingVehicle.cs" />
+    <Compile Include="Source\Vehicles\PlayerRacingVehicle.cs" />
+    <Compile Include="Source\Vehicles\RacingVehicle.cs" />
+    <Compile Include="Source\Vehicles\SpawnRacingVehicle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
