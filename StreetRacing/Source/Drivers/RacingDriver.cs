@@ -1,11 +1,16 @@
 ﻿using GTA;
 using StreetRacing.Source.Tasks;
 
-namespace StreetRacing.Source.Vehicles
+namespace StreetRacing.Source.Drivers
 {
-    public abstract class RacingVehicle : IRacingVehicle
+    public abstract class RacingDriver : IRacingDriver
     {
-        public int Position { get; set; }
+        ~RacingDriver()
+        {
+            Lost();
+        }
+
+        public int RacePosition { get; set; }
 
         public Ped Driver { get; protected set; }
 
@@ -28,9 +33,14 @@ namespace StreetRacing.Source.Vehicles
         public void Lost()
         {
             InRace = false;
-            Blip.Remove();
+            Blip?.Remove();
 
             SetTask(new DriverTaskCruise());
+        }
+
+        public float Distance(IRacingDriver driver)
+        {
+            return Vehicle.Position.DistanceTo(driver.Driver.Position);
         }
     }
 }

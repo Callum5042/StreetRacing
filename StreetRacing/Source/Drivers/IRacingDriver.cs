@@ -1,15 +1,15 @@
 ﻿using GTA;
 using StreetRacing.Source.Tasks;
 
-namespace StreetRacing.Source.Vehicles
+namespace StreetRacing.Source.Drivers
 {
-    public interface IRacingVehicle
+    public interface IRacingDriver
     {
         Ped Driver { get; }
 
         Vehicle Vehicle { get; }
 
-        int Position { get; set; }
+        int RacePosition { get; set; }
 
         IDriverTask DriverTask { get; }
 
@@ -22,5 +22,7 @@ namespace StreetRacing.Source.Vehicles
         void Lost();
 
         bool IsPlayer { get; }
+
+        float Distance(IRacingDriver driver);
     }
 }

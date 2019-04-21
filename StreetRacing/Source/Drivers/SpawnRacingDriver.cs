@@ -2,11 +2,11 @@
 using GTA.Math;
 using GTA.Native;
 
-namespace StreetRacing.Source.Vehicles
+namespace StreetRacing.Source.Drivers
 {
-    public class SpawnRacingVehicle : RacingVehicle
+    public class SpawnRacingDriver : RacingDriver
     {
-        public SpawnRacingVehicle(VehicleHash vehicle, Vector3 spawnPosition)
+        public SpawnRacingDriver(VehicleHash vehicle, Vector3 spawnPosition)
         {
             Vehicle = World.CreateVehicle(vehicle, spawnPosition, Game.Player.Character.Heading);
 

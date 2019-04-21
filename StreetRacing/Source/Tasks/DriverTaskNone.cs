@@ -1,4 +1,4 @@
-﻿using StreetRacing.Source.Vehicles;
+﻿using StreetRacing.Source.Drivers;
 
 namespace StreetRacing.Source.Tasks
 {
@@ -6,7 +6,7 @@ namespace StreetRacing.Source.Tasks
     {
         public DriverTask DriverTask => DriverTask.None;
 
-        public void Handle(IRacingVehicle vehicle)
+        public void Handle(IRacingDriver vehicle)
         {
         }
     }

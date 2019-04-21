@@ -1,148 +1,152 @@
 ﻿using GTA;
 using GTA.Math;
 using StreetRacing.Source.Tasks;
-using StreetRacing.Source.Vehicles;
+using StreetRacing.Source.Drivers;
 using System.Linq;
 using System.Text;
+using System;
+using System.Collections.Generic;
 
 namespace StreetRacing.Source.Races
 {
     public class DistanceRace : Race
     {
-        public IRacingVehicle First { get; set; }
+        private readonly float loseDistance = 100f;
 
         public DistanceRace(bool spawn, int numberOfVehicles)
         {
             if (spawn)
             {
-                for (int i = 1; i <= numberOfVehicles; ++i)
-                {
-                    var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));// + (Game.Player.Character.RightVector * 3.0f);
-                    Vehicles.Add(new SpawnRacingVehicle(SpawnRandomVehicle(), position));
-                }
+                SpawnVehicles(numberOfVehicles);
             }
             else
             {
-                Vehicles.Add(new NearbyRacingVehicle());
-                UI.Notify($"DistanceRace started again: {Vehicles.First().Vehicle.DisplayName}");
+                // Get closest vehicle
             }
         }
 
-        public override bool IsRacing { get; protected set; } = true;
-        
-        public override void Tick()
+        private void SpawnVehicles(int numberOfVehicles)
         {
-
-
-
-            /*
-             * 
-             * 
-             * */
-
-            //float distanceToFirst = 0;
-            //if (First != null)
-            //{
-            //    distanceToFirst = Game.Player.Character.Position.DistanceTo(First.Vehicle.Position);
-            //}
-            //else
-            //{
-            //    distanceToFirst = Game.Player.Character.Position.DistanceTo(Vehicles.First().Vehicle.Position);
-            //}
-
-
-            //if (distanceToFirst < 20f)
-            //{
-            //    // Calculate player position
-            //    PlayerPosition = Vehicles.Count + 1;
-            //    foreach (var vehicle in Vehicles)
-            //    {
-            //        var heading = Game.Player.Character.Position - vehicle.Driver.Position;
-            //        var dot = Vector3.Dot(heading.Normalized, vehicle.Driver.ForwardVector.Normalized);
-
-            //        if (dot > 0)
-            //        {
-            //            PlayerPosition--;
-            //        }
-            //    }
-
-            //    // Calculate bots position
-            //    foreach (var vehicle in Vehicles)
-            //    {
-            //        vehicle.Position = Vehicles.Count + 1;
-            //        foreach (var otherVehicle in Vehicles)
-            //        {
-            //            var heading = vehicle.Vehicle.Position - otherVehicle.Driver.Position;
-            //            var dot = Vector3.Dot(heading.Normalized, otherVehicle.Driver.ForwardVector.Normalized);
-
-            //            if (dot > 0)
-            //            {
-            //                vehicle.Position--;
-            //            }
-            //        }
-
-            //        // Check player
-            //        var xheading = vehicle.Vehicle.Position - Game.Player.Character.Position;
-            //        var xdot = Vector3.Dot(xheading.Normalized, Game.Player.Character.ForwardVector.Normalized);
-
-            //        if (xdot > 0)
-            //        {
-            //            vehicle.Position--;
-            //        }
-
-            //        if (vehicle.Position == 1)
-            //        {
-            //            First = vehicle;
-            //        }
-            //    }
-            //}
-
-            //// Give tasks
-            //foreach (var vehicle in Vehicles)
-            //{
-            //    if (PlayerPosition == 1)
-            //    {
-            //        SetTaskChase(vehicle, Game.Player.Character);
-            //    }
-            //    else
-            //    {
-            //        if (vehicle == First)
-            //        {
-            //            vehicle.SetTask(new DriverTaskCruise());
-            //        }
-            //        else
-            //        {
-            //            SetTaskChase(vehicle, First.Driver);
-            //        }
-            //    }
-
-            //    vehicle.Blip.Position = vehicle.Vehicle.Position;
-
-            //    var distanceToFirstVehicle = vehicle.Vehicle.Position.DistanceTo(First.Vehicle.Position);
-            //    if (distanceToFirst > 100f)
-            //    {
-            //        vehicle.Lost();
-            //        UI.Notify($"{vehicle.Vehicle.DisplayName} has lost");
-            //    }
-            //}
-
-            //if (Vehicles.All(x => !x.InRace))
-            //{
-            //    IsRacing = false;
-            //    UI.Notify($"You win");
-            //}
-
-            //// show
-            //var message = new StringBuilder();
-            //message.Append($"Position: {PlayerPosition}");
-
+            for (int i = 1; i <= numberOfVehicles; ++i)
+            {
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));// + (Game.Player.Character.RightVector * 3.0f);
+                Drivers.Add(new SpawnRacingDriver(SpawnRandomVehicle(), position));
+            }
             
-            //message.Append($" - Distance: {distanceToFirst}");
-
-            //UI.ShowSubtitle(message.ToString());
+            Drivers.Add(PlayerDriver);
         }
 
-        private void SetTaskChase(IRacingVehicle vehicle, Ped target)
+        public override bool IsRacing { get; protected set; } = true;
+
+        public override void Tick()
+        {
+            CalculateDriversPosition();
+            SetDriversTask();
+            UpdateDriversBlip();
+            CheckIfDriverIsOutOfRace();
+            CheckForWinner();
+
+            // UI Test
+            float distance = 0;
+            if (Drivers.Count > 1)
+            {
+                distance = PlayerDriver.RacePosition == 1 ? PlayerDriver.Distance(Drivers.ElementAt(1)) : PlayerDriver.Distance(Drivers.First());
+            }
+
+            UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition} - Distance: {distance} - First: {Drivers.First().Vehicle.DisplayName} - Count: {Drivers.Count}");
+        }
+
+        private void CheckForWinner()
+        {
+            if (Drivers.Count == 1)
+            {
+                if (Drivers.First().IsPlayer)
+                {
+                    FinishRace(win: true);
+                }
+                else
+                {
+                    FinishRace(win: false);
+                }
+            }
+        }
+
+        private void CheckIfDriverIsOutOfRace()
+        {
+            foreach (var driver in Drivers.ToList())
+            {
+                if (driver.RacePosition != 1)
+                {
+                    if (driver.Distance(Drivers.First()) > loseDistance)
+                    {
+                        UI.Notify($"{driver.Vehicle.DisplayName} has lost");
+                        driver.Vehicle.Explode();
+                        driver.Lost();
+                        Drivers.Remove(driver);
+                    }
+                }
+            }
+        }
+
+        private void FinishRace(bool win)
+        {
+            IsRacing = false;
+            UI.ShowSubtitle($"Finish race: {win}");
+            if (win)
+            {
+                UI.Notify("You have won");
+            }
+            else
+            {
+                UI.Notify("You have lost");
+            }
+
+            foreach (var driver in Drivers)
+            {
+                if (!driver.IsPlayer)
+                {
+                    driver.Lost();
+                }
+            }
+        }
+
+        private void UpdateDriversBlip()
+        {
+            foreach (var driver in Drivers)
+            {
+                if (!driver.IsPlayer)
+                {
+                    driver.Blip.Position = driver.Driver.Position;
+                }
+            }
+        }
+
+        private void SetDriversTask()
+        {
+            foreach (var driver in Drivers)
+            {
+                if (!driver.IsPlayer)
+                {
+                    if (driver.RacePosition == 1)
+                    {
+                        driver.SetTask(new DriverTaskCruise());
+                    }
+                    else
+                    {
+                        if (driver.Distance(Drivers.First()) > 20f)
+                        {
+                            driver.SetTask(new DriverTaskChase(Drivers.First().Driver));
+                        }
+                        else
+                        {
+                            driver.SetTask(new DriverTaskCruise());
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SetTaskChase(IRacingDriver vehicle, Ped target)
         {
             var distanceToFirst = vehicle.Vehicle.Position.DistanceTo(target.Position);
             if (distanceToFirst < 20f)

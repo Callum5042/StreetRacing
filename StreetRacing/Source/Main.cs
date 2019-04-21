@@ -15,7 +15,7 @@ namespace StreetRacing
         private MenuPool menuPool;
         private bool isActive = true;
         private bool allowSpawn = true;
-        private int numberOfVehicles = 4;
+        private int numberOfVehicles = 1;
 
         private IRace race;
 
@@ -33,9 +33,6 @@ namespace StreetRacing
             AddMenuActive(mainMenu);
             AddMenuAllowSpawns(mainMenu);
             AddMenuNumberOfVehicles(mainMenu);
-            //AddMenuFoods(mainMenu);
-            //AddMenuCook(mainMenu);
-            //AddMenuAnotherMenu(mainMenu);
             //menuPool.RefreshIndex();
 
             KeyDown += (o, e) =>
@@ -70,13 +67,21 @@ namespace StreetRacing
                 switch (e.KeyCode)
                 {
                     case Keys.E:
-                        if (Game.IsWaypointActive)
-                        {
-                            // race = new SprintRace();
+                        if (Game.Player.Character.CurrentVehicle != null && (race == null || !race.IsRacing))
+                        { 
+                            race = new DistanceRace(allowSpawn, numberOfVehicles);
                         }
                         else
                         {
-                            race = new DistanceRace(allowSpawn, numberOfVehicles);
+                            if (race.IsRacing)
+                            {
+                                UI.Notify("You're already in a race");
+                            }
+
+                            if (Game.Player.Character.CurrentVehicle == null)
+                            {
+                                UI.Notify("You're not in a vehicle");
+                            }
                         }
                         break;
                 }
@@ -124,36 +129,13 @@ namespace StreetRacing
                 5
             };
 
-            var newitem = new UIMenuListItem("Food", number, 0);
+            var newitem = new UIMenuListItem("Drivers", number, numberOfVehicles - 1);
             menu.AddItem(newitem);
             menu.OnListChange += (sender, item, index) =>
             {
                 if (item == newitem)
                 {
                     numberOfVehicles = (int)item.IndexToItem(index);
-                }
-
-            };
-        }
-
-        public void AddMenuFoods(UIMenu menu)
-        {
-            var foods = new List<dynamic>
-        {
-            "Banana",
-            "Apple",
-            "Pizza",
-            "Quartilicious",
-            0xF00D, // Dynamic!
-        };
-            var newitem = new UIMenuListItem("Food", foods, 0);
-            menu.AddItem(newitem);
-            menu.OnListChange += (sender, item, index) =>
-            {
-                if (item == newitem)
-                {
-                    dish = item.IndexToItem(index).ToString();
-                    UI.Notify("Preparing ~b~" + dish + "~w~...");
                 }
 
             };

@@ -1,15 +1,16 @@
 ﻿using GTA;
 using GTA.Math;
 using GTA.Native;
-using StreetRacing.Source.Vehicles;
+using StreetRacing.Source.Drivers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StreetRacing.Source.Races
 {
     public abstract class Race : IRace
     {
-        public int PlayerPosition { get; set; }
+        public IRacingDriver PlayerDriver { get; } = new PlayerRacingDriver();
 
         public abstract bool IsRacing { get; protected set; }
 
@@ -17,7 +18,7 @@ namespace StreetRacing.Source.Races
 
         protected readonly float overtakeDistance = 40f;
 
-        protected IList<IRacingVehicle> Vehicles = new List<IRacingVehicle>();
+        protected IList<IRacingDriver> Drivers = new List<IRacingDriver>();
 
         public VehicleHash SpawnRandomVehicle()
         {
@@ -51,26 +52,31 @@ namespace StreetRacing.Source.Races
             var vehicleIndex = random.Next(vehicles.Count);
             return vehicles[vehicleIndex];
         }
-
-        protected void CalculatePlayerPosition()
+        
+        protected void CalculateDriversPosition()
         {
-            PlayerPosition = Vehicles.Count + 1;
-            foreach (var vehicle in Vehicles)
+            foreach (var driver in Drivers)
             {
-                if (GetDistance(vehicle) < overtakeDistance)
+                driver.RacePosition = Drivers.Count;
+                foreach (var otherDriver in Drivers)
                 {
-                    var heading = Game.Player.Character.Position - vehicle.Driver.Position;
-                    var dot = Vector3.Dot(heading.Normalized, vehicle.Driver.ForwardVector.Normalized);
-
-                    if (dot > 0)
+                    if (driver != otherDriver)
                     {
-                        PlayerPosition--;
+                        var heading = driver.Vehicle.Position - otherDriver.Vehicle.Position;
+                        var dot = Vector3.Dot(heading.Normalized, otherDriver.Vehicle.Driver.ForwardVector.Normalized);
+
+                        if (dot > 0)
+                        {
+                            driver.RacePosition--;
+                        }
                     }
                 }
             }
+
+            Drivers = Drivers.OrderBy(x => x.RacePosition).ToList();
         }
 
-        protected float GetDistance(IRacingVehicle vehicle)
+        protected float GetDistance(IRacingDriver vehicle)
         {
             return Game.Player.Character.Position.DistanceTo(vehicle.Driver.Position);
         }

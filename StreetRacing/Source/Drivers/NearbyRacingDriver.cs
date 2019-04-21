@@ -3,11 +3,11 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-namespace StreetRacing.Source.Vehicles
+namespace StreetRacing.Source.Drivers
 {
-    public class NearbyRacingVehicle : RacingVehicle
+    public class NearbyRacingDriver : RacingDriver
     {
-        public NearbyRacingVehicle()
+        public NearbyRacingDriver()
         {
             Vehicle = GetClosestVehicleToPlayer(radius: 20f);
             if (Vehicle == null)
