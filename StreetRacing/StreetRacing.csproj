@@ -49,7 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Interface.cs" />
+    <Compile Include="Source\Interface\NativeUIExtensions.cs" />
+    <Compile Include="Source\Interface\StreetRacingUI.cs" />
+    <Compile Include="Source\Races\IStreetRace.cs" />
+    <Compile Include="Source\Races\RandomRace.cs" />
     <Compile Include="Source\Tasks\DriverTask.cs" />
     <Compile Include="Source\Tasks\DriverTaskChase.cs" />
     <Compile Include="Source\Tasks\DriverTaskNone.cs" />

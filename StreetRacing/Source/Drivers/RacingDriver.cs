@@ -7,7 +7,7 @@ namespace StreetRacing.Source.Drivers
     {
         ~RacingDriver()
         {
-            Lost();
+            // Lost();
         }
 
         public int RacePosition { get; set; }
@@ -16,7 +16,7 @@ namespace StreetRacing.Source.Drivers
 
         public Vehicle Vehicle { get; protected set; }
 
-        public IDriverTask DriverTask { get; private set; } = new DriverTaskNone();
+        public IDriverTask DriverTask { get; private set; } = new DriverTaskNone(); 
 
         public Blip Blip { get; set; }
 

@@ -12,7 +12,7 @@ namespace StreetRacing.Source.Races
     {
         public IRacingDriver PlayerDriver { get; } = new PlayerRacingDriver();
 
-        public abstract bool IsRacing { get; protected set; }
+        public virtual bool IsRacing { get; protected set; }
 
         public abstract void Tick();
 

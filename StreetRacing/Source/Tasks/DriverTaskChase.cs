@@ -1,16 +1,15 @@
-﻿using GTA;
-using StreetRacing.Source.Drivers;
+﻿using StreetRacing.Source.Drivers;
 using System;
 
 namespace StreetRacing.Source.Tasks
 {
     public class DriverTaskChase : IDriverTask
     {
-        private readonly Ped ped;
+        private readonly IRacingDriver racingDriver;
 
-        public DriverTaskChase(Ped ped)
+        public DriverTaskChase(IRacingDriver racingDriver)
         {
-            this.ped = ped ?? throw new ArgumentNullException();
+            this.racingDriver = racingDriver ?? throw new ArgumentNullException();
         }
 
         public DriverTask DriverTask => DriverTask.Chase;
@@ -19,7 +18,7 @@ namespace StreetRacing.Source.Tasks
         {
             if (vehicle.DriverTask.DriverTask != DriverTask)
             {
-                vehicle.Driver.Task.VehicleChase(ped);
+                vehicle.Driver.Task.VehicleChase(racingDriver.Driver);
             }
         }
     }

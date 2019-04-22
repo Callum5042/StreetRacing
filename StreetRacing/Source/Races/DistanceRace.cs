@@ -1,17 +1,13 @@
 ﻿using GTA;
-using GTA.Math;
-using StreetRacing.Source.Tasks;
 using StreetRacing.Source.Drivers;
+using StreetRacing.Source.Tasks;
 using System.Linq;
-using System.Text;
-using System;
-using System.Collections.Generic;
 
 namespace StreetRacing.Source.Races
 {
     public class DistanceRace : Race
     {
-        private readonly float loseDistance = 100f;
+        private readonly float loseDistance = 300f;
 
         public DistanceRace(bool spawn, int numberOfVehicles)
         {
@@ -21,7 +17,8 @@ namespace StreetRacing.Source.Races
             }
             else
             {
-                // Get closest vehicle
+                Drivers.Add(PlayerDriver);
+                Drivers.Add(new NearbyRacingDriver());
             }
         }
 
@@ -116,7 +113,10 @@ namespace StreetRacing.Source.Races
             {
                 if (!driver.IsPlayer)
                 {
-                    driver.Blip.Position = driver.Driver.Position;
+                    if (driver.Blip != null)
+                    {
+                        driver.Blip.Position = driver.Driver.Position;
+                    }
                 }
             }
         }
@@ -135,7 +135,7 @@ namespace StreetRacing.Source.Races
                     {
                         if (driver.Distance(Drivers.First()) > 20f)
                         {
-                            driver.SetTask(new DriverTaskChase(Drivers.First().Driver));
+                           // driver.SetTask(new DriverTaskChase(Drivers.First().Driver));
                         }
                         else
                         {
@@ -155,7 +155,7 @@ namespace StreetRacing.Source.Races
             }
             else
             {
-                vehicle.SetTask(new DriverTaskChase(target));
+                //vehicle.SetTask(new DriverTaskChase(target));
             }
         }
     }
