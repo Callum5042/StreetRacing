@@ -14,8 +14,9 @@ namespace StreetRacing.Source.Drivers
             Driver.DrivingStyle = DrivingStyle.Normal | DrivingStyle.Rushed;
             Driver.AlwaysKeepTask = true;
 
-            Blip = World.CreateBlip(Driver.Position);
-            Blip.Name = "Racer";
+            Vehicle.AddBlip();
+            Vehicle.CurrentBlip.Color = BlipColor.Blue;
+            Vehicle.CurrentBlip.IsFlashing = false;
         }
     }
 }

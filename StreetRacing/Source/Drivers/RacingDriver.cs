@@ -42,5 +42,10 @@ namespace StreetRacing.Source.Drivers
         {
             return Vehicle.Position.DistanceTo(driver.Driver.Position);
         }
+
+        public override string ToString()
+        {
+            return Vehicle.FriendlyName;
+        }
     }
 }

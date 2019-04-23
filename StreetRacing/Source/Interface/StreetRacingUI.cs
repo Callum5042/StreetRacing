@@ -19,6 +19,7 @@ namespace StreetRacing.Source.Interface
             menuPool.Add(mainMenu);
             
             mainMenu.AddCheckbox(Active, nameof(Active));
+            mainMenu.AddCheckbox(Spawn, nameof(Spawn), "Spawn a vehicle to start a race with");
         }
 
         public void OnTick(object sender, EventArgs e)
@@ -35,5 +36,7 @@ namespace StreetRacing.Source.Interface
         }
 
         public bool Active { get; protected set; } = true;
+
+        public bool Spawn { get; protected set; } = true;
     }
 }

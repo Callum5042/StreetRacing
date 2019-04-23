@@ -27,6 +27,8 @@ namespace StreetRacing
             UI.Notify($"{Name} has loaded");
         }
 
+        // public Blip Blip { get; set; }
+
         private void OnTick(object sender, EventArgs e)
         {
             // Unload
@@ -34,6 +36,19 @@ namespace StreetRacing
             {
                 Tick -= race.OnTick;
             }
+
+            //var message = World.GetStreetName(Game.Player.Character.Position);
+            //var position = World.GetNextPositionOnStreet(Game.Player.Character.Position);
+            //UI.ShowSubtitle(World.GetStreetName(Game.Player.Character.Position));
+
+            //if (Blip == null)
+            //{
+            //    Blip = World.CreateBlip(position);
+            //}
+            //else
+            //{
+            //    Blip.Position = position;
+            //}
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
@@ -41,11 +56,14 @@ namespace StreetRacing
             // only for testing
             if (e.KeyCode == Keys.T)
             {
-                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (12.0f * 1));
-                var vehicle = World.CreateVehicle(VehicleHash.ItaliGTO, position, Game.Player.Character.Heading);
-                vehicle.PlaceOnGround();
+                //var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (12.0f * 1));
+                //var vehicle = World.CreateVehicle(VehicleHash.ItaliGTO, position, Game.Player.Character.Heading);
+                //vehicle.PlaceOnGround();
 
-                vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+                //vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+
+                race = new SpawnRandomRace(spawnCount: 5);
+                Tick += race.OnTick;
             }
 
             if (e.KeyCode == Keys.E)
