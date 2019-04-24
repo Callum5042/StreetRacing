@@ -1,25 +1,20 @@
-﻿using GTA;
-using NativeUI;
+﻿using NativeUI;
 using System;
 using System.Windows.Forms;
 
 namespace StreetRacing.Source.Interface
 {
-    public class StreetRacingUI
+    public class ConfigurationMenu : Configuration
     {
         protected readonly MenuPool menuPool = new MenuPool();
         protected UIMenu mainMenu;
 
-        public StreetRacingUI(Script script)
+        public ConfigurationMenu()
         {
-            script.Tick += OnTick;
-            script.KeyUp += OnKeyUp;
-
             mainMenu = new UIMenu("Street Racing", "Configuration");
             menuPool.Add(mainMenu);
-            
-            mainMenu.AddCheckbox(Active, nameof(Active));
-            mainMenu.AddCheckbox(Spawn, nameof(Spawn), "Spawn a vehicle to start a race with");
+
+            AddMenuActive(mainMenu);
         }
 
         public void OnTick(object sender, EventArgs e)
@@ -35,8 +30,17 @@ namespace StreetRacing.Source.Interface
             }
         }
 
-        public bool Active { get; protected set; } = true;
-
-        public bool Spawn { get; protected set; } = true;
+        public void AddMenuActive(UIMenu menu)
+        {
+            var newitem = new UIMenuCheckboxItem("Active", Active);
+            menu.AddItem(newitem);
+            menu.OnCheckboxChange += (sender, item, checked_) =>
+            {
+                if (item == newitem)
+                {
+                    Active = checked_;
+                }
+            };
+        }
     }
 }

@@ -1,15 +1,15 @@
 ﻿using GTA;
-using GTA.Native;
 using StreetRacing.Source.Interface;
 using StreetRacing.Source.Races;
 using System;
+using System.Reflection;
 using System.Windows.Forms;
 
-namespace StreetRacing
+namespace StreetRacing.Source
 {
     public class Main : Script
     {
-        private readonly StreetRacingUI streetRacingUI;
+        private readonly ConfigurationMenu configMenu = new ConfigurationMenu();
         private IStreetRace race;
 
         public Main()
@@ -21,13 +21,18 @@ namespace StreetRacing
                 race.Finish();
                 UI.Notify("StreetRacing has aborted");
             };
-            
-            streetRacingUI = new StreetRacingUI(this);
 
-            UI.Notify($"{Name} has loaded");
+            Tick += configMenu.OnTick;
+            KeyUp += configMenu.OnKeyUp;
+
+            Start();
         }
 
-        // public Blip Blip { get; set; }
+        private void Start()
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            UI.Notify($"{Name} has loaded: {version.Major}.{version.Minor}.{version.Build}");
+        }
 
         private void OnTick(object sender, EventArgs e)
         {
@@ -36,46 +41,21 @@ namespace StreetRacing
             {
                 Tick -= race.OnTick;
             }
-
-            //var message = World.GetStreetName(Game.Player.Character.Position);
-            //var position = World.GetNextPositionOnStreet(Game.Player.Character.Position);
-            //UI.ShowSubtitle(World.GetStreetName(Game.Player.Character.Position));
-
-            //if (Blip == null)
-            //{
-            //    Blip = World.CreateBlip(position);
-            //}
-            //else
-            //{
-            //    Blip.Position = position;
-            //}
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            // only for testing
             if (e.KeyCode == Keys.T)
             {
-                //var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (12.0f * 1));
-                //var vehicle = World.CreateVehicle(VehicleHash.ItaliGTO, position, Game.Player.Character.Heading);
-                //vehicle.PlaceOnGround();
-
-                //vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-
-                race = new SpawnRandomRace(spawnCount: 5);
+                race = new SpawnRandomRace(configMenu);
                 Tick += race.OnTick;
             }
 
             if (e.KeyCode == Keys.E)
             {
-                StartRace<RandomRace>();
+                race = new RandomRace();
+                Tick += race.OnTick;
             }
-        }
-
-        private void StartRace<TRace>() where TRace : IStreetRace, new()
-        {
-            race = new TRace();
-            Tick += race.OnTick;
         }
     }
 }

@@ -2,7 +2,7 @@
 using GTA.Math;
 using GTA.Native;
 
-namespace StreetRacing.Source.Drivers
+namespace StreetRacing.Source.Racers
 {
     public class SpawnRacingDriver : RacingDriver
     {

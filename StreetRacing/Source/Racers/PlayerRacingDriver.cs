@@ -1,6 +1,6 @@
 ﻿using GTA;
 
-namespace StreetRacing.Source.Drivers
+namespace StreetRacing.Source.Racers
 {
     public class PlayerRacingDriver : RacingDriver
     {

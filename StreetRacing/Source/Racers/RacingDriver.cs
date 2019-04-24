@@ -1,7 +1,7 @@
 ﻿using GTA;
 using StreetRacing.Source.Tasks;
 
-namespace StreetRacing.Source.Drivers
+namespace StreetRacing.Source.Racers
 {
     public abstract class RacingDriver : IRacingDriver
     {

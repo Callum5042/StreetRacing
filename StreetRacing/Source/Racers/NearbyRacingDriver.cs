@@ -2,7 +2,7 @@
 using GTA.Math;
 using System.Collections.Generic;
 
-namespace StreetRacing.Source.Drivers
+namespace StreetRacing.Source.Racers
 {
     public class NearbyRacingDriver : RacingDriver
     {
