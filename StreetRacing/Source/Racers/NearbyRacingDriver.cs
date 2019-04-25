@@ -6,11 +6,11 @@ namespace StreetRacing.Source.Racers
 {
     public class NearbyRacingDriver : RacingDriver
     {
-        private readonly float startDistance = 20f;
+        private readonly float startRadius = 20f;
 
-        public NearbyRacingDriver()
+        public NearbyRacingDriver(IConfiguration configuration)
         {
-            Vehicle = GetClosestVehicleToPlayer(radius: startDistance);
+            Vehicle = GetClosestVehicleToPlayer(radius: startRadius);
             Vehicle.Driver.Delete();
 
             Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
@@ -19,6 +19,11 @@ namespace StreetRacing.Source.Racers
 
             Vehicle.AddBlip();
             Vehicle.CurrentBlip.Color = BlipColor.Blue;
+
+            if (configuration.MaxMods)
+            {
+                
+            }
         }
 
         private Vehicle GetClosestVehicleToPlayer(float radius)

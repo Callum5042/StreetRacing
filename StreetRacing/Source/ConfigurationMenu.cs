@@ -34,11 +34,11 @@ namespace StreetRacing.Source.Interface
         {
             var newitem = new UIMenuCheckboxItem("Active", Active);
             menu.AddItem(newitem);
-            menu.OnCheckboxChange += (sender, item, checked_) =>
+            menu.OnCheckboxChange += (sender, item, @checked) =>
             {
                 if (item == newitem)
                 {
-                    Active = checked_;
+                    Active = @checked;
                 }
             };
         }

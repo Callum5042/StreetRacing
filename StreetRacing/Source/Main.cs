@@ -53,7 +53,7 @@ namespace StreetRacing.Source
 
             if (e.KeyCode == Keys.E)
             {
-                race = new RandomRace();
+                race = new RandomRace(configMenu);
                 Tick += race.OnTick;
             }
         }

@@ -7,10 +7,13 @@ namespace StreetRacing.Source.Races
 {
     public class RandomRace : StreetRace
     {
-        public RandomRace()
+        public RandomRace(IConfiguration configuration)
         {
             Drivers.Add(PlayerDriver);
-            Drivers.Add(new NearbyRacingDriver());
+            Drivers.Add(new NearbyRacingDriver(configuration));
+
+
+
 
             UI.Notify("RandomRace started");
         }
