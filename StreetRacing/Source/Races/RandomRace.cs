@@ -7,8 +7,12 @@ namespace StreetRacing.Source.Races
 {
     public class RandomRace : StreetRace
     {
+        private readonly IConfiguration configuration;
+
         public RandomRace(IConfiguration configuration)
         {
+            this.configuration = configuration;
+
             Drivers.Add(PlayerDriver);
             Drivers.Add(new NearbyRacingDriver(configuration));
             
@@ -28,18 +32,18 @@ namespace StreetRacing.Source.Races
         protected override void Other()
         {
             var distance = Drivers.First().Distance(Drivers.Last());
-            if (distance > 100f)
+            if (distance > configuration.WinDistance)
             {
                 if (PlayerDriver.RacePosition == 1)
                 {
-                    var money = 1000;
+                    var money = configuration.Money;
                     UI.Notify($"You win: {money}");
                     Game.Player.Money += money;
                 }
                 else
                 {
                     UI.Notify("You lose");
-                    Game.Player.Money -= 1000;
+                    Game.Player.Money -= configuration.Money;
                 }
 
                 Finish();

@@ -8,14 +8,18 @@ namespace StreetRacing.Source
 
         void Save();
 
+        Keys StartNearbyKey { get; }
+
+        Keys StartSpawnKey { get; }
+
         bool Active { get; }
 
         int SpawnCount { get; }
 
         bool MaxMods { get; }
 
-        Keys StartNearbyKey { get; }
+        float WinDistance { get; }
 
-        Keys StartSpawnKey { get; }
+        int Money { get; }
     }
 }

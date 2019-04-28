@@ -1,6 +1,7 @@
 ﻿using GTA;
 using NativeUI;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace StreetRacing.Source.Interface
@@ -19,6 +20,7 @@ namespace StreetRacing.Source.Interface
             
             AddMenuActive(mainMenu);
             AddMenuSetMax(mainMenu);
+            AddMenuSpawnCount(mainMenu);
 
             // Add save config
             AddSaveConfig(mainMenu);
@@ -39,7 +41,7 @@ namespace StreetRacing.Source.Interface
             }
         }
 
-        public void AddMenuActive(UIMenu menu)
+        private void AddMenuActive(UIMenu menu)
         {
             var newitem = new UIMenuCheckboxItem("Active", Active);
             menu.AddItem(newitem);
@@ -52,7 +54,7 @@ namespace StreetRacing.Source.Interface
             };
         }
 
-        public void AddMenuSetMax(UIMenu menu)
+        private void AddMenuSetMax(UIMenu menu)
         {
             var newitem = new UIMenuCheckboxItem("Set Max", MaxMods);
             menu.AddItem(newitem);
@@ -65,7 +67,7 @@ namespace StreetRacing.Source.Interface
             };
         }
 
-        public void AddSaveConfig(UIMenu menu)
+        private void AddSaveConfig(UIMenu menu)
         {
             var newitem = new UIMenuItem("Save configuration");
             menu.AddItem(newitem);
@@ -75,6 +77,24 @@ namespace StreetRacing.Source.Interface
                 {
                     UI.Notify("Saved config");
                     Save();
+                }
+            };
+        }
+
+        private void AddMenuSpawnCount(UIMenu menu)
+        {
+            var spawnCount = new List<dynamic>
+            {
+                1, 2, 3, 4, 5, 6, 7
+            };
+
+            var newitem = new UIMenuListItem("Spawn Count" , spawnCount, 0);
+            menu.AddItem(newitem);
+            menu.OnListChange += (sender, item, index) =>
+            {
+                if (item == newitem)
+                {
+                    SpawnCount = (int)item.IndexToItem(index);
                 }
             };
         }

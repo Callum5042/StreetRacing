@@ -85,14 +85,18 @@ namespace StreetRacing.Source
             }
         }
 
-        public bool Active { get; protected set; } = true;
-
-        public int SpawnCount { get; protected set; } = 5;
-
-        public bool MaxMods { get; protected set; } = true;
-
         public Keys StartNearbyKey { get; protected set; } = Keys.E;
 
         public Keys StartSpawnKey { get; protected set; } = Keys.T;
+
+        public bool Active { get; protected set; } = true;
+
+        public int SpawnCount { get; protected set; } = 1;
+
+        public bool MaxMods { get; protected set; } = true;
+
+        public float WinDistance { get; protected set; } = 200f;
+
+        public int Money { get; protected set; } = 1000;
     }
 }

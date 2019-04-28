@@ -1,4 +1,5 @@
 ﻿using GTA;
+using GTA.Math;
 using GTA.Native;
 using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
@@ -10,14 +11,21 @@ namespace StreetRacing.Source.Races
 {
     public class SpawnRandomRace : StreetRace
     {
+        private readonly IConfiguration configuration;
+
         public SpawnRandomRace(IConfiguration configuration)
         {
+            this.configuration = configuration;
+
             Drivers.Add(PlayerDriver);
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
                 var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
                 Drivers.Add(new SpawnRacingDriver(configuration, SpawnRandomVehicle(), position));
             }
+
+            Drivers.Last().SetTask(new DriverTaskCruise());
+            CalculateDriversPosition();
 
             UI.Notify($"SpawnRandomRace started - {configuration.SpawnCount} spawned");
         }
@@ -45,14 +53,14 @@ namespace StreetRacing.Source.Races
 
                 if (driver.RacePosition != 1)
                 {
-                    if (driver.Distance(Drivers.First()) > 200f)
+                    if (driver.Distance(Drivers.First()) > configuration.WinDistance)
                     {
                         driver.Lost();
                         Drivers.Remove(driver);
 
                         UI.Notify($"{driver.ToString()} lose");
                     }
-                }
+                }   
             }
         }
 
