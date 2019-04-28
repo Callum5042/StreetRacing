@@ -1,6 +1,5 @@
 ﻿using GTA;
 using GTA.Math;
-using System;
 using System.Collections.Generic;
 
 namespace StreetRacing.Source.Racers
@@ -15,7 +14,6 @@ namespace StreetRacing.Source.Racers
             Vehicle.Driver.Delete();
 
             Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-            Driver.DrivingStyle = DrivingStyle.Normal | DrivingStyle.Rushed;
             Driver.AlwaysKeepTask = true;
 
             Vehicle.AddBlip();
