@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
+using System;
 using System.Collections.Generic;
 
 namespace StreetRacing.Source.Racers
@@ -22,7 +23,7 @@ namespace StreetRacing.Source.Racers
 
             if (configuration.MaxMods)
             {
-                
+                SetModsMax();
             }
         }
 

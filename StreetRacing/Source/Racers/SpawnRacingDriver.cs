@@ -6,7 +6,7 @@ namespace StreetRacing.Source.Racers
 {
     public class SpawnRacingDriver : RacingDriver
     {
-        public SpawnRacingDriver(VehicleHash vehicle, Vector3 spawnPosition)
+        public SpawnRacingDriver(IConfiguration configuration, VehicleHash vehicle, Vector3 spawnPosition)
         {
             Vehicle = World.CreateVehicle(vehicle, spawnPosition, Game.Player.Character.Heading);
 
@@ -17,6 +17,11 @@ namespace StreetRacing.Source.Racers
             Vehicle.AddBlip();
             Vehicle.CurrentBlip.Color = BlipColor.Blue;
             Vehicle.CurrentBlip.IsFlashing = false;
+
+            if (configuration.MaxMods)
+            {
+                SetModsMax();
+            }
         }
     }
 }

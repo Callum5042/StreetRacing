@@ -1,15 +1,11 @@
 ﻿using GTA;
 using StreetRacing.Source.Tasks;
+using System;
 
 namespace StreetRacing.Source.Racers
 {
     public abstract class RacingDriver : IRacingDriver
     {
-        ~RacingDriver()
-        {
-            // Lost();
-        }
-
         public int RacePosition { get; set; }
 
         public Ped Driver { get; protected set; }
@@ -46,6 +42,16 @@ namespace StreetRacing.Source.Racers
         public override string ToString()
         {
             return Vehicle.FriendlyName;
+        }
+
+        public void SetModsMax()
+        {
+            Vehicle.InstallModKit();
+            foreach (VehicleMod mod in Enum.GetValues(typeof(VehicleMod)))
+            {
+                int lastIndex = Vehicle.GetModCount(mod);
+                Vehicle.SetMod(mod, lastIndex - 1, true);
+            }
         }
     }
 }

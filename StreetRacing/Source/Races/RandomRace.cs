@@ -11,10 +11,7 @@ namespace StreetRacing.Source.Races
         {
             Drivers.Add(PlayerDriver);
             Drivers.Add(new NearbyRacingDriver(configuration));
-
-
-
-
+            
             UI.Notify("RandomRace started");
         }
 
@@ -31,7 +28,7 @@ namespace StreetRacing.Source.Races
         protected override void Other()
         {
             var distance = Drivers.First().Distance(Drivers.Last());
-            if (distance > 200f)
+            if (distance > 100f)
             {
                 if (PlayerDriver.RacePosition == 1)
                 {

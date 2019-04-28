@@ -14,8 +14,8 @@ namespace StreetRacing.Source.Races
             Drivers.Add(PlayerDriver);
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
-                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));// + (Game.Player.Character.RightVector * 3.0f);
-                Drivers.Add(new SpawnRacingDriver(SpawnRandomVehicle(), position));
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
+                Drivers.Add(new SpawnRacingDriver(configuration, SpawnRandomVehicle(), position));
             }
 
             UI.Notify($"SpawnRandomRace started - {configuration.SpawnCount} spawned");
