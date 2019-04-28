@@ -1,4 +1,6 @@
-﻿namespace StreetRacing.Source
+﻿using System.Windows.Forms;
+
+namespace StreetRacing.Source
 {
     public interface IConfiguration
     {
@@ -11,5 +13,9 @@
         int SpawnCount { get; }
 
         bool MaxMods { get; }
+
+        Keys StartNearbyKey { get; }
+
+        Keys StartSpawnKey { get; }
     }
 }

@@ -88,13 +88,13 @@ namespace StreetRacing.Source
 
             if (configMenu.Active)
             {
-                if (e.KeyCode == Keys.T)
+                if (e.KeyCode == configMenu.StartSpawnKey)
                 {
                     race = new SpawnRandomRace(configMenu);
                     Tick += race.OnTick;
                 }
 
-                if (e.KeyCode == Keys.E)
+                if (e.KeyCode == configMenu.StartNearbyKey)
                 {
                     race = new RandomRace(configMenu);
                     Tick += race.OnTick;

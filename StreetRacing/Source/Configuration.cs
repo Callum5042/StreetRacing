@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using GTA;
+using System;
+using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace StreetRacing.Source
@@ -31,6 +34,20 @@ namespace StreetRacing.Source
                                         document.ReadToFollowing(prop.Name);
                                         prop.SetValue(this, document.ReadElementContentAsInt());
                                     }
+                                    else if (prop.PropertyType == typeof(Keys))
+                                    {
+                                        document.ReadToFollowing(prop.Name);
+                                        var value = document.ReadElementContentAsString();
+
+                                        if (Enum.TryParse(value, out Keys key))
+                                        {
+                                            prop.SetValue(this, key);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        document.ReadToFollowing(prop.Name);
+                                    }
                                 }
                             }
                         }
@@ -41,6 +58,7 @@ namespace StreetRacing.Source
             {
                 // UI.Notify("Could not find file: " + ex.FileName);
             }
+            catch (InvalidOperationException) { }
         }
 
         public void Save()
@@ -72,5 +90,9 @@ namespace StreetRacing.Source
         public int SpawnCount { get; protected set; } = 5;
 
         public bool MaxMods { get; protected set; } = true;
+
+        public Keys StartNearbyKey { get; protected set; } = Keys.E;
+
+        public Keys StartSpawnKey { get; protected set; } = Keys.T;
     }
 }
