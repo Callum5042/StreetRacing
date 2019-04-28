@@ -77,7 +77,7 @@ namespace StreetRacing.Source.Races
 
         protected void CheckCarState()
         {
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer).ToList())
             {
                 if (driver.Vehicle.IsDead || driver.Driver.IsDead || driver.Driver.CurrentVehicle != driver.Vehicle)
                 {
@@ -96,6 +96,8 @@ namespace StreetRacing.Source.Races
                     }
 
                     UI.Notify($"{driver.Vehicle.FriendlyName} has been disqualified - {message}");
+                    driver.Lost();
+                    Drivers.Remove(driver);
                 }
             }
         }

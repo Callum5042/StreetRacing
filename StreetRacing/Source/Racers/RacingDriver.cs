@@ -14,8 +14,6 @@ namespace StreetRacing.Source.Racers
 
         public IDriverTask DriverTask { get; private set; } = new DriverTaskNone(); 
 
-        public Blip Blip { get; set; }
-
         public void SetTask(IDriverTask task)
         {
             task.Handle(this);
@@ -29,7 +27,7 @@ namespace StreetRacing.Source.Racers
         public void Lost()
         {
             InRace = false;
-            Blip?.Remove();
+            Vehicle.CurrentBlip.Remove();
 
             SetTask(new DriverTaskCruise());
         }

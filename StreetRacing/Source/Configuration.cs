@@ -29,6 +29,11 @@ namespace StreetRacing.Source
                                         document.ReadToFollowing(prop.Name);
                                         prop.SetValue(this, document.ReadElementContentAsBoolean());
                                     }
+                                    else if (prop.PropertyType == typeof(int))
+                                    {
+                                        document.ReadToFollowing(prop.Name);
+                                        prop.SetValue(this, document.ReadElementContentAsInt());
+                                    }
                                 }
                             }
                         }

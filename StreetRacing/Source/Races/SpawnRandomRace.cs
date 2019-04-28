@@ -1,6 +1,7 @@
 ﻿using GTA;
 using GTA.Native;
 using StreetRacing.Source.Racers;
+using StreetRacing.Source.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace StreetRacing.Source.Races
                 {
                     if (driver.Distance(Drivers.First()) > 200f)
                     {
-                        driver.Vehicle.CurrentBlip.Remove();
+                        driver.Lost();
                         Drivers.Remove(driver);
 
                         UI.Notify($"{driver.ToString()} lose");

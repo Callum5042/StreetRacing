@@ -15,8 +15,6 @@ namespace StreetRacing.Source.Racers
 
         void SetTask(IDriverTask task);
 
-        Blip Blip { get; set; }
-
         bool InRace { get; }
 
         void Lost();
