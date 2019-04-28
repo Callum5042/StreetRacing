@@ -36,7 +36,7 @@ namespace StreetRacing.Source
         private void Start()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            UI.Notify($"{Name} has loaded: {version.Major}.{version.Minor}.{version.Build}");
+            UI.Notify($"{Name} has loaded: v{version.Major}.{version.Minor}.{version.Build}");
         }
 
         private void OnTick(object sender, EventArgs e)
