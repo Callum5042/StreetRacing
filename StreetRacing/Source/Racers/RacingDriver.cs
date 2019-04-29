@@ -1,11 +1,24 @@
 ﻿using GTA;
+using GTA.Math;
 using StreetRacing.Source.Tasks;
 using System;
 
 namespace StreetRacing.Source.Racers
 {
-    public abstract class RacingDriver : IRacingDriver
+    public class RacingDriver : IRacingDriver
     {
+        public RacingDriver() { }
+
+        public RacingDriver(IRacingDriver driver)
+        {
+            RacePosition = driver.RacePosition;
+            Driver = driver.Driver;
+            Vehicle = driver.Vehicle;
+            DriverTask = driver.DriverTask;
+            IsPlayer = driver.IsPlayer;
+            InRace = driver.InRace;
+        }
+
         public int RacePosition { get; set; }
 
         public Ped Driver { get; protected set; }
@@ -50,6 +63,19 @@ namespace StreetRacing.Source.Racers
                 int lastIndex = Vehicle.GetModCount(mod);
                 Vehicle.SetMod(mod, lastIndex - 1, true);
             }
+        }
+
+        public bool IsInFront(IRacingDriver driver)
+        {
+            var heading = Vehicle.Position - driver.Vehicle.Position;
+            var dot = Vector3.Dot(heading.Normalized, driver.Vehicle.Driver.ForwardVector.Normalized);
+
+            if (dot > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

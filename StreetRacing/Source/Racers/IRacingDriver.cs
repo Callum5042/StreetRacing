@@ -22,5 +22,7 @@ namespace StreetRacing.Source.Racers
         bool IsPlayer { get; }
 
         float Distance(IRacingDriver driver);
+
+        bool IsInFront(IRacingDriver driver);
     }
 }

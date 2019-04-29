@@ -60,7 +60,7 @@ namespace StreetRacing.Source.Races
 
                         UI.Notify($"{driver.ToString()} lose");
                     }
-                }   
+                }
             }
         }
 

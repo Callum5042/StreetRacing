@@ -5,6 +5,7 @@ using StreetRacing.Source.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace StreetRacing.Source.Races
 {
@@ -31,12 +32,15 @@ namespace StreetRacing.Source.Races
         {
             if (IsRacing)
             {
+                //CalculateDriversPosition();
                 CalculateDriversPosition();
                 UpdateBlipNumber();
                 SetTask();
 
                 CheckCarState();
-                Other();
+                // Other();
+
+                UI.ShowSubtitle($"Position: {Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition}");
             }
         }
 
@@ -104,21 +108,29 @@ namespace StreetRacing.Source.Races
 
         protected void CalculateDriversPosition()
         {
-            foreach (var driver in Drivers)
+            foreach (var driver in Drivers.Where(x => x.RacePosition != 1))
             {
                 driver.RacePosition = Drivers.Count;
-                foreach (var otherDriver in Drivers)
+                foreach (var otherDriver in Drivers.Where(x => x.RacePosition != 1))
                 {
                     if (driver != otherDriver)
                     {
-                        var heading = driver.Vehicle.Position - otherDriver.Vehicle.Position;
-                        var dot = Vector3.Dot(heading.Normalized, otherDriver.Vehicle.Driver.ForwardVector.Normalized);
-
-                        if (dot > 0)
+                        if (driver.IsInFront(otherDriver))
                         {
                             driver.RacePosition--;
                         }
                     }
+                }
+            }
+
+            // Special distance checking for first place
+            var first = Drivers.FirstOrDefault(x => x.RacePosition == 1);
+            foreach (var driver in Drivers.Where(x => x.RacePosition != 1 && x.Distance(first) < 20f))
+            {
+                if (driver.IsInFront(first))
+                {
+                    first.RacePosition = driver.RacePosition;
+                    driver.RacePosition = 1;
                 }
             }
 
