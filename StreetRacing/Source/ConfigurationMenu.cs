@@ -35,7 +35,7 @@ namespace StreetRacing.Source.Interface
 
         public void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F8 && !menuPool.IsAnyMenuOpen())
+            if (e.KeyCode == MenuKey && !menuPool.IsAnyMenuOpen())
             {
                 mainMenu.Visible = !mainMenu.Visible;
             }

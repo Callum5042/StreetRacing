@@ -1,5 +1,4 @@
 ﻿using GTA;
-using GTA.Math;
 using GTA.Native;
 using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
@@ -39,13 +38,11 @@ namespace StreetRacing.Source.Races
                         if (Drivers.Count > 1)
                         {
                             var distance = driver.Distance(Drivers.ElementAtOrDefault(1));
-                            UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition} - Distance: {distance}");
                         }
                     }
                     else
                     {
                         var distance = driver.Distance(Drivers.First());
-                        UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition} - Distance: {distance}");
                     }
                 }
 
@@ -57,10 +54,15 @@ namespace StreetRacing.Source.Races
                         Drivers.Remove(driver);
 
                         UI.Notify($"{driver.ToString()} lose");
+
+                        if (driver.IsPlayer)
+                        {
+                            IsRacing = false;
+                        }
                     }
                 }
 
-                if (Drivers.Count == 1)
+                if (Drivers.Count == 1 || !IsRacing)
                 {
                     IsRacing = false;
                     if (Drivers.FirstOrDefault().IsPlayer)
@@ -102,7 +104,26 @@ namespace StreetRacing.Source.Races
                 VehicleHash.Omnis,
                 VehicleHash.Lynx,
                 VehicleHash.Tropos,
-                VehicleHash.FlashGT
+                VehicleHash.FlashGT,
+                VehicleHash.GT500,
+                VehicleHash.ItaliGTB,
+                VehicleHash.ItaliGTB2,
+                VehicleHash.ItaliGTO,
+                VehicleHash.SultanRS,
+                VehicleHash.Kamacho,
+                VehicleHash.Kuruma,
+                VehicleHash.Kuruma2,
+                VehicleHash.Neon,
+                VehicleHash.Ruston,
+                VehicleHash.Schlagen,
+                VehicleHash.Schafter2,
+                VehicleHash.Schafter3,
+                VehicleHash.Schafter4,
+                VehicleHash.Schafter5,
+                VehicleHash.Specter,
+                VehicleHash.Specter2,
+                VehicleHash.Surano,
+                VehicleHash.Radi
             };
 
             var random = new Random();

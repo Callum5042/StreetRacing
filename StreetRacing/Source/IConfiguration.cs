@@ -8,6 +8,8 @@ namespace StreetRacing.Source
 
         void Save();
 
+        Keys MenuKey { get; }
+
         Keys StartNearbyKey { get; }
 
         Keys StartSpawnKey { get; }

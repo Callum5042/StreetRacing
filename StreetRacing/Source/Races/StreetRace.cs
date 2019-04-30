@@ -38,6 +38,8 @@ namespace StreetRacing.Source.Races
 
                 CheckCarState();
                 Other();
+
+                UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition}");
             }
         }
 

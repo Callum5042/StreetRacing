@@ -13,10 +13,21 @@ namespace StreetRacing.Source.Races
         {
             this.configuration = configuration;
 
-            Drivers.Add(PlayerDriver);
-            Drivers.Add(new NearbyRacingDriver(configuration));
-            
-            UI.Notify("RandomRace started");
+            try
+            {
+                Drivers.Add(PlayerDriver);
+                Drivers.Add(new NearbyRacingDriver(configuration));
+            }
+            catch (System.InvalidOperationException)
+            {
+                UI.Notify("Unable to find car in range");
+                IsRacing = false;
+            }
+
+            if (IsRacing)
+            {
+                UI.Notify("RandomRace started");
+            }
         }
 
         public override void Finish()
@@ -32,9 +43,9 @@ namespace StreetRacing.Source.Races
         protected override void Other()
         {
             var distance = Drivers.First().Distance(Drivers.Last());
-            if (distance > configuration.WinDistance)
+            if (distance > configuration.WinDistance || Drivers.FirstOrDefault().IsPlayer)
             {
-                if (PlayerDriver.RacePosition == 1)
+                if (PlayerDriver.RacePosition == 1 || Drivers.FirstOrDefault().IsPlayer)
                 {
                     var money = configuration.Money;
                     UI.Notify($"You win: {money}");
@@ -48,9 +59,6 @@ namespace StreetRacing.Source.Races
 
                 Finish();
             }
-
-            // Display
-            UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition} - Distance: {distance}");
         }
     }
 }

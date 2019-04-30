@@ -11,6 +11,11 @@ namespace StreetRacing.Source.Racers
         public NearbyRacingDriver(IConfiguration configuration)
         {
             Vehicle = GetClosestVehicleToPlayer(radius: startRadius);
+            if (Vehicle == null)
+            {
+                throw new System.InvalidOperationException("Vehicle is null");
+            }
+
             Vehicle.Driver.Delete();
 
             Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);

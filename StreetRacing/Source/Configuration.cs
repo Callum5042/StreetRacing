@@ -85,6 +85,8 @@ namespace StreetRacing.Source
             }
         }
 
+        public Keys MenuKey { get; protected set; } = Keys.F8;
+
         public Keys StartNearbyKey { get; protected set; } = Keys.E;
 
         public Keys StartSpawnKey { get; protected set; } = Keys.T;

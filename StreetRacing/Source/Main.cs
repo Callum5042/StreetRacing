@@ -50,15 +50,45 @@ namespace StreetRacing.Source
             {
                 if (e.KeyCode == configMenu.StartSpawnKey)
                 {
-                    race = new SpawnRandomRace(configMenu);
-                    Tick += race.OnTick;
+                    if (CanStartRace())
+                    {
+                        race = new SpawnRandomRace(configMenu);
+                        Tick += race.OnTick;
+                    }
                 }
 
                 if (e.KeyCode == configMenu.StartNearbyKey)
                 {
-                    race = new RandomRace(configMenu);
-                    Tick += race.OnTick;
+                    if (CanStartRace())
+                    {
+                        race = new RandomRace(configMenu);
+                        Tick += race.OnTick;
+                    }
                 }
+            }
+        }
+
+        private bool CanStartRace()
+        {
+            string message = string.Empty;
+            if (Game.Player.Character.CurrentVehicle == null)
+            {
+                message = "Get in a vehicle to start a race";
+            }
+
+            if (race != null && race.IsRacing)
+            {
+                message = "Already in a race";
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                return true;
+            }
+            else
+            {
+                UI.Notify(message);
+                return false;
             }
         }
     }
