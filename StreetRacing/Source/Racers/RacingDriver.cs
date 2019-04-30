@@ -42,7 +42,10 @@ namespace StreetRacing.Source.Racers
             InRace = false;
             Vehicle.CurrentBlip.Remove();
 
-            SetTask(new DriverTaskCruise());
+            if (!IsPlayer)
+            {
+                SetTask(new DriverTaskCruise());
+            }
         }
 
         public float Distance(IRacingDriver driver)
@@ -68,14 +71,7 @@ namespace StreetRacing.Source.Racers
         public bool IsInFront(IRacingDriver driver)
         {
             var heading = Vehicle.Position - driver.Vehicle.Position;
-            var dot = Vector3.Dot(heading.Normalized, driver.Vehicle.Driver.ForwardVector.Normalized);
-
-            if (dot > 0)
-            {
-                return true;
-            }
-
-            return false;
+            return Vector3.Dot(heading.Normalized, driver.Vehicle.Driver.ForwardVector.Normalized) > 0;
         }
     }
 }

@@ -32,15 +32,12 @@ namespace StreetRacing.Source.Races
         {
             if (IsRacing)
             {
-                //CalculateDriversPosition();
                 CalculateDriversPosition();
                 UpdateBlipNumber();
                 SetTask();
 
                 CheckCarState();
-                // Other();
-
-                UI.ShowSubtitle($"Position: {Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition}");
+                Other();
             }
         }
 

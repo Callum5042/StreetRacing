@@ -26,8 +26,6 @@ namespace StreetRacing.Source.Races
 
             Drivers.Last().SetTask(new DriverTaskCruise());
             CalculateDriversPosition();
-
-            UI.Notify($"SpawnRandomRace started - {configuration.SpawnCount} spawned");
         }
 
         protected override void Other()
@@ -59,6 +57,21 @@ namespace StreetRacing.Source.Races
                         Drivers.Remove(driver);
 
                         UI.Notify($"{driver.ToString()} lose");
+                    }
+                }
+
+                if (Drivers.Count == 1)
+                {
+                    IsRacing = false;
+                    if (Drivers.FirstOrDefault().IsPlayer)
+                    {
+                        UI.Notify($"You win");
+                        Game.Player.Money += configuration.Money;
+                    }
+                    else
+                    {
+                        UI.Notify($"You lose");
+                        Game.Player.Money -= configuration.Money;
                     }
                 }
             }
