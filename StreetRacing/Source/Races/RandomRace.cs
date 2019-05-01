@@ -26,7 +26,7 @@ namespace StreetRacing.Source.Races
 
             if (IsRacing)
             {
-                UI.Notify("RandomRace started");
+                UI.Notify("Race started");
             }
         }
 
@@ -43,9 +43,9 @@ namespace StreetRacing.Source.Races
         protected override void Other()
         {
             var distance = Drivers.First().Distance(Drivers.Last());
-            if (distance > configuration.WinDistance || Drivers.FirstOrDefault().IsPlayer)
+            if (distance > configuration.WinDistance || (Drivers.Count == 1 && Drivers.FirstOrDefault().IsPlayer))
             {
-                if (PlayerDriver.RacePosition == 1 || Drivers.FirstOrDefault().IsPlayer)
+                if (PlayerDriver.RacePosition == 1 || (Drivers.Count == 1 && Drivers.FirstOrDefault().IsPlayer))
                 {
                     var money = configuration.Money;
                     UI.Notify($"You win: {money}");

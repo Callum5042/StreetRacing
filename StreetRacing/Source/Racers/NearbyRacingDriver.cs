@@ -19,7 +19,9 @@ namespace StreetRacing.Source.Racers
             Vehicle.Driver.Delete();
 
             Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+            Driver.DrivingStyle = DrivingStyle.Rushed;
             Driver.AlwaysKeepTask = true;
+            Driver.DrivingSpeed = 200f;
 
             Vehicle.AddBlip();
             Vehicle.CurrentBlip.Color = BlipColor.Blue;

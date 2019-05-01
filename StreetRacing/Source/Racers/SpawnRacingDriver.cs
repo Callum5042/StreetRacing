@@ -11,17 +11,22 @@ namespace StreetRacing.Source.Racers
             Vehicle = World.CreateVehicle(vehicle, spawnPosition, Game.Player.Character.Heading);
 
             Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-            Driver.DrivingStyle = DrivingStyle.Normal | DrivingStyle.Rushed;
+            Driver.DrivingStyle = DrivingStyle.Rushed;
             Driver.AlwaysKeepTask = true;
-
-            Vehicle.AddBlip();
-            Vehicle.CurrentBlip.Color = BlipColor.Blue;
-            Vehicle.CurrentBlip.IsFlashing = false;
+            Driver.DrivingSpeed = 200f;
 
             if (configuration.MaxMods)
             {
                 SetModsMax();
             }
+
+            Vehicle.AddBlip();
+            Vehicle.CurrentBlip.Color = BlipColor.Blue;
+            Vehicle.CurrentBlip.IsFlashing = false;
+            Vehicle.MaxSpeed = 200f;
+            Vehicle.EnginePowerMultiplier = 120;
+            Vehicle.EngineTorqueMultiplier = 120;
+            
         }
     }
 }

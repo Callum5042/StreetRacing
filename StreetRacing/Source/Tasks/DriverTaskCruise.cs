@@ -10,7 +10,7 @@ namespace StreetRacing.Source.Tasks
         {
             if (vehicle.DriverTask.DriverTask != DriverTask)
             {
-                vehicle.Driver.Task.CruiseWithVehicle(vehicle.Vehicle, 150f, 262204);
+                vehicle.Driver.Task.CruiseWithVehicle(vehicle.Vehicle, 200f, 262204);
             }
         }
     }

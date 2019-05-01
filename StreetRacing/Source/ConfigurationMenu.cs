@@ -88,7 +88,7 @@ namespace StreetRacing.Source.Interface
                 1, 2, 3, 4, 5, 6, 7
             };
 
-            var newitem = new UIMenuListItem("Spawn Count" , spawnCount, 0);
+            var newitem = new UIMenuListItem("Spawn Count" , spawnCount, SpawnCount - 1);
             menu.AddItem(newitem);
             menu.OnListChange += (sender, item, index) =>
             {
