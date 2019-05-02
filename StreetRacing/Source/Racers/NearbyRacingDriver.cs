@@ -13,7 +13,7 @@ namespace StreetRacing.Source.Racers
             Vehicle = GetClosestVehicleToPlayer(radius: startRadius);
             if (Vehicle == null)
             {
-                throw new System.InvalidOperationException("Vehicle is null");
+                throw new System.InvalidOperationException("No vehicle in range");
             }
 
             Vehicle.Driver.Delete();

@@ -26,7 +26,6 @@ namespace StreetRacing.Source.Racers
             Vehicle.MaxSpeed = 200f;
             Vehicle.EnginePowerMultiplier = 120;
             Vehicle.EngineTorqueMultiplier = 120;
-            
         }
     }
 }

@@ -11,8 +11,20 @@ namespace StreetRacing.Source.Races
 {
     public class StreetRace : IStreetRace
     {
-        public IRacingDriver PlayerDriver { get; protected set; } = new PlayerRacingDriver();
+        protected readonly IConfiguration configuration;
 
+        public StreetRace(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+
+            if (this.configuration.IsRacing)
+            {
+                throw new InvalidOperationException("Already in a race");
+            }
+
+            this.configuration.IsRacing = true;
+        }
+        
         public IList<IRacingDriver> Drivers { get; protected set; } = new List<IRacingDriver>();
 
         public bool IsRacing { get; protected set; } = true;
@@ -20,12 +32,7 @@ namespace StreetRacing.Source.Races
         public virtual void Finish()
         {
             IsRacing = false;
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
-            {
-                driver.Vehicle.CurrentBlip.Remove();
-                driver.Driver.Delete();
-                driver.Vehicle.Delete();
-            }
+            configuration.IsRacing = false;
         }
 
         public virtual void OnTick(object sender, EventArgs e)
@@ -39,7 +46,7 @@ namespace StreetRacing.Source.Races
                 CheckCarState();
                 Other();
 
-                UI.ShowSubtitle($"Position: {PlayerDriver.RacePosition}");
+                UI.ShowSubtitle($"Position: {Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition}");
             }
         }
 

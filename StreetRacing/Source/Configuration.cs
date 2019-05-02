@@ -100,5 +100,7 @@ namespace StreetRacing.Source
         public float WinDistance { get; protected set; } = 200f;
 
         public int Money { get; protected set; } = 1000;
+
+        public bool IsRacing { get; set; }
     }
 }

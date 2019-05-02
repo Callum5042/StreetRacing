@@ -8,23 +8,29 @@ using System.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class SpawnRandomRace : StreetRace
+    public class SpawnDistanceRace : StreetRace
     {
-        private readonly IConfiguration configuration;
-
-        public SpawnRandomRace(IConfiguration configuration)
+        public SpawnDistanceRace(IConfiguration configuration) : base(configuration)
         {
-            this.configuration = configuration;
-
-            Drivers.Add(PlayerDriver);
+            Drivers.Add(new PlayerRacingDriver());
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
                 var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
                 Drivers.Add(new SpawnRacingDriver(configuration, SpawnRandomVehicle(), position));
             }
 
-            Drivers.Last().SetTask(new DriverTaskCruise());
             CalculateDriversPosition();
+        }
+
+        public override void Finish()
+        {
+            base.Finish();
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            {
+                driver.Vehicle.CurrentBlip.Remove();
+                driver.Driver.Delete();
+                driver.Vehicle.Delete();
+            }
         }
 
         protected override void Other()

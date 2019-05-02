@@ -48,47 +48,24 @@ namespace StreetRacing.Source
         {
             if (configMenu.Active)
             {
-                if (e.KeyCode == configMenu.StartSpawnKey)
+                try
                 {
-                    if (CanStartRace())
+                    if (e.KeyCode == configMenu.StartSpawnKey)
                     {
-                        race = new SpawnRandomRace(configMenu);
+                        race = new SpawnDistanceRace(configMenu);
+                        Tick += race.OnTick;
+                    }
+
+                    if (e.KeyCode == configMenu.StartNearbyKey)
+                    {
+                        race = new NearbyDistanceRace(configMenu);
                         Tick += race.OnTick;
                     }
                 }
-
-                if (e.KeyCode == configMenu.StartNearbyKey)
+                catch (InvalidOperationException ex)
                 {
-                    if (CanStartRace())
-                    {
-                        race = new RandomRace(configMenu);
-                        Tick += race.OnTick;
-                    }
+                    UI.Notify(ex.Message);
                 }
-            }
-        }
-
-        private bool CanStartRace()
-        {
-            string message = string.Empty;
-            if (Game.Player.Character.CurrentVehicle == null)
-            {
-                message = "Get in a vehicle to start a race";
-            }
-
-            if (race != null && race.IsRacing)
-            {
-                message = "Already in a race";
-            }
-
-            if (string.IsNullOrEmpty(message))
-            {
-                return true;
-            }
-            else
-            {
-                UI.Notify(message);
-                return false;
             }
         }
     }
