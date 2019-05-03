@@ -1,4 +1,5 @@
-﻿using StreetRacing.Source.Racers;
+﻿using GTA;
+using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
 using System.Linq;
 
@@ -26,23 +27,54 @@ namespace StreetRacing.Source.Races
 
         protected override void Tick()
         {
-            //var distance = Drivers.First().Distance(Drivers.Last());
-            //if (distance > configuration.WinDistance || (Drivers.Count == 1 && Drivers.FirstOrDefault().IsPlayer))
-            //{
-            //    if (PlayerDriver.RacePosition == 1 || (Drivers.Count == 1 && Drivers.FirstOrDefault().IsPlayer))
-            //    {
-            //        var money = configuration.Money;
-            //        UI.Notify($"You win: {money}");
-            //        Game.Player.Money += money;
-            //    }
-            //    else
-            //    {
-            //        UI.Notify("You lose");
-            //        Game.Player.Money -= configuration.Money;
-            //    }
+            foreach (var driver in Racers.ToList())
+            {
+                if (driver.IsPlayer)
+                {
+                    if (driver.RacePosition == 1)
+                    {
+                        if (Racers.Count > 1)
+                        {
+                            var distance = driver.Distance(Racers.ElementAtOrDefault(1));
+                        }
+                    }
+                    else
+                    {
+                        var distance = driver.Distance(Racers.First());
+                    }
+                }
 
-            //    Finish();
-            //}
+                if (driver.RacePosition != 1)
+                {
+                    if (driver.Distance(Racers.First()) > configuration.WinDistance)
+                    {
+                        driver.Lost();
+                        Racers.Remove(driver);
+
+                        UI.Notify($"{driver.ToString()} lose");
+
+                        if (driver.IsPlayer)
+                        {
+                            IsRacing = false;
+                        }
+                    }
+                }
+
+                if (Racers.Count == 1 || !IsRacing)
+                {
+                    IsRacing = false;
+                    if (Racers.FirstOrDefault().IsPlayer)
+                    {
+                        UI.Notify($"You win");
+                        Game.Player.Money += configuration.Money;
+                    }
+                    else
+                    {
+                        UI.Notify($"You lose");
+                        Game.Player.Money -= configuration.Money;
+                    }
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
+using StreetRacing.Source.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +20,12 @@ namespace StreetRacing.Source.Racers
 
             Vehicle.Driver.Delete();
             ConfigureDefault();
+        }
+
+        public override void Lost()
+        {
+            base.Lost();
+            SetTask(new DriverTaskCruise());
         }
 
         private Vehicle GetClosestVehicleToPlayer(float radius)

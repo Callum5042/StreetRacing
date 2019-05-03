@@ -14,6 +14,13 @@ namespace StreetRacing.Source.Racers
             ConfigureDefault();
         }
 
+        public override void Lost()
+        {
+            base.Lost();
+            Vehicle.Driver.Delete();
+            Vehicle.Delete();
+        }
+
         private VehicleHash SpawnRandomVehicle()
         {
             var vehicles = new List<VehicleHash>()

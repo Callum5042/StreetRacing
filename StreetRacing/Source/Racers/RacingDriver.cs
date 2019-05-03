@@ -35,15 +35,10 @@ namespace StreetRacing.Source.Racers
 
         public virtual bool IsPlayer { get; } = false;
 
-        public void Lost()
+        public virtual void Lost()
         {
             InRace = false;
             Vehicle.CurrentBlip.Remove();
-
-            if (!IsPlayer)
-            {
-                SetTask(new DriverTaskCruise());
-            }
         }
 
         public float Distance(IRacingDriver driver)
