@@ -1,6 +1,7 @@
 ﻿using GTA;
 using GTA.Math;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StreetRacing.Source.Racers
 {
@@ -8,7 +9,7 @@ namespace StreetRacing.Source.Racers
     {
         private readonly float startRadius = 20f;
 
-        public NearbyRacingDriver(IConfiguration configuration)
+        public NearbyRacingDriver(IConfiguration configuration) : base(configuration)
         {
             Vehicle = GetClosestVehicleToPlayer(radius: startRadius);
             if (Vehicle == null)
@@ -17,49 +18,19 @@ namespace StreetRacing.Source.Racers
             }
 
             Vehicle.Driver.Delete();
-
-            Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-            Driver.DrivingStyle = DrivingStyle.Rushed;
-            Driver.AlwaysKeepTask = true;
-            Driver.DrivingSpeed = 200f;
-
-            Vehicle.AddBlip();
-            Vehicle.CurrentBlip.Color = BlipColor.Blue;
-
-            if (configuration.MaxMods)
-            {
-                SetModsMax();
-            }
+            ConfigureDefault();
         }
 
         private Vehicle GetClosestVehicleToPlayer(float radius)
         {
-            IList<Vehicle> vehicles = World.GetNearbyVehicles(Game.Player.Character.Position, radius);
-            Vehicle closestVehicle = null;
-            float? closestDistance = null;
-
-            var playerPosition = Game.Player.Character.Position;
-            foreach (var vehicle in vehicles)
+            IList<(float distance, Vehicle vehicle)> vehicles = new List<(float distance, Vehicle vehicle)>();
+            foreach (var vehicle in World.GetNearbyVehicles(Game.Player.Character.Position, radius).Where(x => !x.Driver.IsPlayer && x.IsAlive))
             {
-                if (!vehicle.Driver.IsPlayer && vehicle.IsAlive)
-                {
-                    if (closestVehicle == null)
-                    {
-                        closestVehicle = vehicle;
-                        closestDistance = Vector3.Distance(playerPosition, vehicle.Position);
-                        continue;
-                    }
-
-                    var distance = Vector3.Distance(playerPosition, vehicle.Position);
-                    if (distance < closestDistance)
-                    {
-                        closestVehicle = vehicle;
-                        closestDistance = distance;
-                    }
-                }
+                var distance = Vector3.Distance(Game.Player.Character.Position, vehicle.Position);
+                vehicles.Add((distance, vehicle));
             }
 
-            return closestVehicle;
+            return vehicles.OrderBy(x => x.distance).FirstOrDefault().vehicle;
         }
     }
 }

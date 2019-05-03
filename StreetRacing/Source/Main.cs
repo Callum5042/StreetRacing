@@ -10,7 +10,8 @@ namespace StreetRacing.Source
     public class Main : Script
     {
         private readonly ConfigurationMenu configMenu = new ConfigurationMenu();
-        private IStreetRace race;
+
+        public static IStreetRace Race { get; protected set; }
         
         public Main()
         {
@@ -18,7 +19,7 @@ namespace StreetRacing.Source
             KeyUp += OnKeyUp;
             Aborted += (o, e) =>
             {
-                race.Finish();
+                Race.Finish();
                 UI.Notify("StreetRacing has aborted");
             };
 
@@ -37,10 +38,10 @@ namespace StreetRacing.Source
         private void OnTick(object sender, EventArgs e)
         {
             // Unload
-            if (race?.IsRacing == false)
+            if (Race?.IsRacing == false)
             {
-                race.Finish();
-                Tick -= race.OnTick;
+                Race.Finish();
+                Tick -= Race.OnTick;
             }
         }
 
@@ -52,14 +53,14 @@ namespace StreetRacing.Source
                 {
                     if (e.KeyCode == configMenu.StartSpawnKey)
                     {
-                        race = new SpawnDistanceRace(configMenu);
-                        Tick += race.OnTick;
+                        Race = new SpawnDistanceRace(configMenu);
+                        Tick += Race.OnTick;
                     }
 
                     if (e.KeyCode == configMenu.StartNearbyKey)
                     {
-                        race = new NearbyDistanceRace(configMenu);
-                        Tick += race.OnTick;
+                        Race = new NearbyDistanceRace(configMenu);
+                        Tick += Race.OnTick;
                     }
                 }
                 catch (InvalidOperationException ex)

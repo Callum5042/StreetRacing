@@ -1,32 +1,31 @@
-﻿using GTA;
-using StreetRacing.Source.Racers;
+﻿using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
 using System.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class NearbyDistanceRace : StreetRace
+    public class NearbyDistanceRace : DistanceRace
     {
         public NearbyDistanceRace(IConfiguration configuration) : base(configuration)
         {
-            Drivers.Add(new PlayerRacingDriver());
-            Drivers.Add(new NearbyRacingDriver(configuration));
+            Racers.Add(new PlayerRacingDriver());
+            Racers.Add(new NearbyRacingDriver(configuration));
+
+            CalculateStartPositions();
         }
 
         public override void Finish()
         {
             base.Finish();
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            foreach (var driver in Racers.Where(x => !x.IsPlayer))
             {
                 driver.Vehicle.CurrentBlip.Remove();
                 driver.SetTask(new DriverTaskCruise());
             }
         }
 
-        protected override void Other()
+        protected override void Tick()
         {
-
-
             //var distance = Drivers.First().Distance(Drivers.Last());
             //if (distance > configuration.WinDistance || (Drivers.Count == 1 && Drivers.FirstOrDefault().IsPlayer))
             //{

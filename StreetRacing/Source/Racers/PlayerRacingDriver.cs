@@ -4,7 +4,7 @@ namespace StreetRacing.Source.Racers
 {
     public class PlayerRacingDriver : RacingDriver
     {
-        public PlayerRacingDriver()
+        public PlayerRacingDriver() : base(null)
         {
             Vehicle = Game.Player.Character.CurrentVehicle;
             Driver = Game.Player.Character;

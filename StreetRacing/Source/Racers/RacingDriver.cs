@@ -2,21 +2,19 @@
 using GTA.Math;
 using StreetRacing.Source.Tasks;
 using System;
+using System.Linq;
 
 namespace StreetRacing.Source.Racers
 {
     public class RacingDriver : IRacingDriver
     {
+        protected readonly IConfiguration configuration;
+
         public RacingDriver() { }
 
-        public RacingDriver(IRacingDriver driver)
+        public RacingDriver(IConfiguration configuration)
         {
-            RacePosition = driver.RacePosition;
-            Driver = driver.Driver;
-            Vehicle = driver.Vehicle;
-            DriverTask = driver.DriverTask;
-            IsPlayer = driver.IsPlayer;
-            InRace = driver.InRace;
+            this.configuration = configuration;
         }
 
         public int RacePosition { get; set; }
@@ -68,10 +66,77 @@ namespace StreetRacing.Source.Racers
             }
         }
 
-        public bool IsInFront(IRacingDriver driver)
+        public bool InFront(IRacingDriver driver)
         {
             var heading = Vehicle.Position - driver.Vehicle.Position;
             return Vector3.Dot(heading.Normalized, driver.Vehicle.Driver.ForwardVector.Normalized) > 0;
+        }
+
+        protected void ConfigureDefault()
+        {
+            Driver = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+            Driver.DrivingStyle = DrivingStyle.Rushed;
+            Driver.AlwaysKeepTask = true;
+            Driver.DrivingSpeed = 200f;
+
+            Vehicle.AddBlip();
+            Vehicle.CurrentBlip.Color = BlipColor.Blue;
+            Vehicle.CurrentBlip.IsFlashing = false;
+            //Vehicle.MaxSpeed = 200f;
+            //Vehicle.EnginePowerMultiplier = 120;
+            //Vehicle.EngineTorqueMultiplier = 120;
+
+            if (configuration.MaxMods)
+            {
+                SetModsMax();
+            }
+        }
+        
+        public void Tick()
+        {
+            // Update blip
+            Vehicle.CurrentBlip.ShowNumber(RacePosition);
+
+            // Set task
+            if (!IsPlayer)
+            {
+                if (RacePosition == 1)
+                {
+                    SetTask(new DriverTaskCruise());
+                }
+                else
+                {
+                    if (Distance(Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1)) < 20f)
+                    {
+                        SetTask(new DriverTaskCruise());
+                    }
+                    else
+                    {
+                        SetTask(new DriverTaskChase(Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1)));
+                    }
+                }
+            }
+
+            // Check driver state
+            if (Vehicle.IsDead || Driver.IsDead || Driver.CurrentVehicle != Vehicle)
+            {
+                string message = "";
+                if (!Vehicle.IsDriveable)
+                {
+                    message = "Vehicle is undriveable";
+                }
+                else if (Driver.IsDead)
+                {
+                    message = "Driver has died";
+                }
+                else if (Driver.CurrentVehicle != Vehicle)
+                {
+                    message = "Driver has left the vehicle";
+                }
+
+                UI.Notify($"{Vehicle.FriendlyName} has been disqualified - {message}");
+                Lost();
+            }
         }
     }
 }

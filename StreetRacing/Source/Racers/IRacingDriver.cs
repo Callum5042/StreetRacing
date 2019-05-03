@@ -5,11 +5,11 @@ namespace StreetRacing.Source.Racers
 {
     public interface IRacingDriver
     {
-        Ped Driver { get; }
-
         Vehicle Vehicle { get; }
 
         int RacePosition { get; set; }
+
+        Ped Driver { get; }
 
         IDriverTask DriverTask { get; }
 
@@ -23,6 +23,8 @@ namespace StreetRacing.Source.Racers
 
         float Distance(IRacingDriver driver);
 
-        bool IsInFront(IRacingDriver driver);
+        bool InFront(IRacingDriver driver);
+
+        void Tick();
     }
 }

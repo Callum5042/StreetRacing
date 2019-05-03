@@ -1,31 +1,27 @@
 ﻿using GTA;
-using GTA.Native;
 using StreetRacing.Source.Racers;
-using StreetRacing.Source.Tasks;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class SpawnDistanceRace : StreetRace
+    public class SpawnDistanceRace : DistanceRace
     {
         public SpawnDistanceRace(IConfiguration configuration) : base(configuration)
         {
-            Drivers.Add(new PlayerRacingDriver());
+            Racers.Add(new PlayerRacingDriver());
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
                 var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
-                Drivers.Add(new SpawnRacingDriver(configuration, SpawnRandomVehicle(), position));
+                Racers.Add(new SpawnRacingDriver(configuration, position));
             }
 
-            CalculateDriversPosition();
+            CalculateStartPositions();
         }
 
         public override void Finish()
         {
             base.Finish();
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            foreach (var driver in Racers.Where(x => !x.IsPlayer))
             {
                 driver.Vehicle.CurrentBlip.Remove();
                 driver.Driver.Delete();
@@ -33,31 +29,31 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        protected override void Other()
+        protected override void Tick()
         {
-            foreach (var driver in Drivers.ToList())
+            foreach (var driver in Racers.ToList())
             {
                 if (driver.IsPlayer)
                 {
                     if (driver.RacePosition == 1)
                     {
-                        if (Drivers.Count > 1)
+                        if (Racers.Count > 1)
                         {
-                            var distance = driver.Distance(Drivers.ElementAtOrDefault(1));
+                            var distance = driver.Distance(Racers.ElementAtOrDefault(1));
                         }
                     }
                     else
                     {
-                        var distance = driver.Distance(Drivers.First());
+                        var distance = driver.Distance(Racers.First());
                     }
                 }
 
                 if (driver.RacePosition != 1)
                 {
-                    if (driver.Distance(Drivers.First()) > configuration.WinDistance)
+                    if (driver.Distance(Racers.First()) > configuration.WinDistance)
                     {
                         driver.Lost();
-                        Drivers.Remove(driver);
+                        Racers.Remove(driver);
 
                         UI.Notify($"{driver.ToString()} lose");
 
@@ -68,10 +64,10 @@ namespace StreetRacing.Source.Races
                     }
                 }
 
-                if (Drivers.Count == 1 || !IsRacing)
+                if (Racers.Count == 1 || !IsRacing)
                 {
                     IsRacing = false;
-                    if (Drivers.FirstOrDefault().IsPlayer)
+                    if (Racers.FirstOrDefault().IsPlayer)
                     {
                         UI.Notify($"You win");
                         Game.Player.Money += configuration.Money;
@@ -83,58 +79,6 @@ namespace StreetRacing.Source.Races
                     }
                 }
             }
-        }
-
-        private VehicleHash SpawnRandomVehicle()
-        {
-            var vehicles = new List<VehicleHash>()
-            {
-                VehicleHash.Comet2,
-                VehicleHash.Comet3,
-                VehicleHash.Comet4,
-                VehicleHash.Elegy,
-                VehicleHash.Elegy2,
-                VehicleHash.Feltzer2,
-                VehicleHash.Feltzer3,
-                VehicleHash.Schwarzer,
-                VehicleHash.Banshee,
-                VehicleHash.Banshee2,
-                VehicleHash.Buffalo,
-                VehicleHash.Buffalo2,
-                VehicleHash.Buffalo3,
-                VehicleHash.Massacro,
-                VehicleHash.Massacro2,
-                VehicleHash.Jester,
-                VehicleHash.Jester2,
-                VehicleHash.Jester3,
-                VehicleHash.Omnis,
-                VehicleHash.Lynx,
-                VehicleHash.Tropos,
-                VehicleHash.FlashGT,
-                VehicleHash.GT500,
-                VehicleHash.ItaliGTB,
-                VehicleHash.ItaliGTB2,
-                VehicleHash.ItaliGTO,
-                VehicleHash.SultanRS,
-                VehicleHash.Kamacho,
-                VehicleHash.Kuruma,
-                VehicleHash.Kuruma2,
-                VehicleHash.Neon,
-                VehicleHash.Ruston,
-                VehicleHash.Schlagen,
-                VehicleHash.Schafter2,
-                VehicleHash.Schafter3,
-                VehicleHash.Schafter4,
-                VehicleHash.Schafter5,
-                VehicleHash.Specter,
-                VehicleHash.Specter2,
-                VehicleHash.Surano,
-                VehicleHash.Radi
-            };
-
-            var random = new Random();
-            var vehicleIndex = random.Next(vehicles.Count);
-            return vehicles[vehicleIndex];
         }
     }
 }

@@ -23,7 +23,5 @@ namespace StreetRacing.Source
         float WinDistance { get; }
 
         int Money { get; }
-
-        bool IsRacing { get; set; }
     }
 }
