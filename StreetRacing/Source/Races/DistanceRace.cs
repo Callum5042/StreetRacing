@@ -67,12 +67,12 @@ namespace StreetRacing.Source.Races
                     {
                         if (Racers.Count > 1)
                         {
-                            var distance = driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 2));
+                            var driverSecond = Racers.FirstOrDefault(x => x.RacePosition == 2);
+                            if (driverSecond != null)
+                            {
+                                var distance = driver.Distance(driverSecond);
+                            }
                         }
-                    }
-                    else
-                    {
-                        var distance = driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 1));
                     }
                 }
 
@@ -95,7 +95,7 @@ namespace StreetRacing.Source.Races
                 if (Racers.Count == 1 || !IsRacing)
                 {
                     IsRacing = false;
-                    if (Racers.FirstOrDefault(x => x.RacePosition == 1).IsPlayer)
+                    if (Racers.FirstOrDefault(x => x.RacePosition == 1)?.IsPlayer == true)
                     {
                         UI.Notify($"You win");
                         Game.Player.Money += configuration.Money;

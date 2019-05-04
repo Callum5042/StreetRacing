@@ -43,6 +43,11 @@ namespace StreetRacing.Source.Racers
 
         public float Distance(IRacingDriver driver)
         {
+            if (driver == null)
+            {
+                throw new ArgumentNullException(nameof(driver));
+            }
+
             return Vehicle.Position.DistanceTo(driver.Driver.Position);
         }
 
@@ -63,6 +68,11 @@ namespace StreetRacing.Source.Racers
 
         public bool InFront(IRacingDriver driver)
         {
+            if (driver == null)
+            {
+                throw new ArgumentNullException(nameof(driver));
+            }
+
             var heading = Vehicle.Position - driver.Vehicle.Position;
             return Vector3.Dot(heading.Normalized, driver.Vehicle.Driver.ForwardVector.Normalized) > 0;
         }
@@ -89,10 +99,13 @@ namespace StreetRacing.Source.Racers
         
         public void Tick()
         {
-            // Update blip
             Vehicle.CurrentBlip.ShowNumber(RacePosition);
+            SetTasks();
+            CheckDriverState();
+        }
 
-            // Set task
+        private void SetTasks()
+        {
             if (!IsPlayer)
             {
                 if (RacePosition == 1)
@@ -111,8 +124,10 @@ namespace StreetRacing.Source.Racers
                     }
                 }
             }
+        }
 
-            // Check driver state
+        private void CheckDriverState()
+        {
             if (Vehicle.IsDead || Driver.IsDead || Driver.CurrentVehicle != Vehicle)
             {
                 string message = "";

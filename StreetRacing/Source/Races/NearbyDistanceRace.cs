@@ -1,5 +1,4 @@
-﻿using GTA;
-using StreetRacing.Source.Racers;
+﻿using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
 using System.Linq;
 
