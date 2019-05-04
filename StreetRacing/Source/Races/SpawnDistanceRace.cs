@@ -28,57 +28,5 @@ namespace StreetRacing.Source.Races
                 driver.Vehicle.Delete();
             }
         }
-
-        protected override void Tick()
-        {
-            foreach (var driver in Racers.ToList())
-            {
-                if (driver.IsPlayer)
-                {
-                    if (driver.RacePosition == 1)
-                    {
-                        if (Racers.Count > 1)
-                        {
-                            var distance = driver.Distance(Racers.ElementAtOrDefault(1));
-                        }
-                    }
-                    else
-                    {
-                        var distance = driver.Distance(Racers.First());
-                    }
-                }
-
-                if (driver.RacePosition != 1)
-                {
-                    if (driver.Distance(Racers.First()) > configuration.WinDistance)
-                    {
-                        driver.Lost();
-                        Racers.Remove(driver);
-
-                        UI.Notify($"{driver.ToString()} lose");
-
-                        if (driver.IsPlayer)
-                        {
-                            IsRacing = false;
-                        }
-                    }
-                }
-
-                if (Racers.Count == 1 || !IsRacing)
-                {
-                    IsRacing = false;
-                    if (Racers.FirstOrDefault().IsPlayer)
-                    {
-                        UI.Notify($"You win");
-                        Game.Player.Money += configuration.Money;
-                    }
-                    else
-                    {
-                        UI.Notify($"You lose");
-                        Game.Player.Money -= configuration.Money;
-                    }
-                }
-            }
-        }
     }
 }

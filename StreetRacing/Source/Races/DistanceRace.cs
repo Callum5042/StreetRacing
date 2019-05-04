@@ -53,13 +53,60 @@ namespace StreetRacing.Source.Races
                 }
                 
                 Tick();
-                UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer).RacePosition} - Count: {Racers.Where(x => x.RacePosition == 1).Count()}");
+                UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer)?.RacePosition} - Count: {Racers.Where(x => x.RacePosition == 1).Count()}");
             }
         }
 
         protected virtual void Tick()
         {
-            
+            foreach (var driver in Racers.ToList())
+            {
+                if (driver.IsPlayer)
+                {
+                    if (driver.RacePosition == 1)
+                    {
+                        if (Racers.Count > 1)
+                        {
+                            var distance = driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 2));
+                        }
+                    }
+                    else
+                    {
+                        var distance = driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 1));
+                    }
+                }
+
+                if (driver.RacePosition != 1)
+                {
+                    if (driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 1)) > configuration.WinDistance)
+                    {
+                        UI.Notify($"{driver.ToString()} lose");
+
+                        driver.Lost();
+                        Racers.Remove(driver);
+
+                        if (driver.IsPlayer)
+                        {
+                            IsRacing = false;
+                        }
+                    }
+                }
+
+                if (Racers.Count == 1 || !IsRacing)
+                {
+                    IsRacing = false;
+                    if (Racers.FirstOrDefault(x => x.RacePosition == 1).IsPlayer)
+                    {
+                        UI.Notify($"You win");
+                        Game.Player.Money += configuration.Money;
+                    }
+                    else
+                    {
+                        UI.Notify($"You lose");
+                        Game.Player.Money -= configuration.Money;
+                    }
+                }
+            }
         }
 
         protected void CalculateStartPositions()
