@@ -3,6 +3,7 @@ using GTA.Math;
 using GTA.Native;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StreetRacing.Source.Racers
 {
@@ -23,54 +24,27 @@ namespace StreetRacing.Source.Racers
 
         private VehicleHash SpawnRandomVehicle()
         {
-            var vehicles = new List<VehicleHash>()
+            var vehicles = new Dictionary<string, IList<VehicleHash>>();
+            vehicles.Add("Super", new List<VehicleHash>()
             {
-                VehicleHash.Comet2,
-                VehicleHash.Comet3,
-                VehicleHash.Comet4,
-                VehicleHash.Elegy,
-                VehicleHash.Elegy2,
-                VehicleHash.Feltzer2,
-                VehicleHash.Feltzer3,
-                VehicleHash.Schwarzer,
-                VehicleHash.Banshee,
-                VehicleHash.Banshee2,
-                VehicleHash.Buffalo,
-                VehicleHash.Buffalo2,
-                VehicleHash.Buffalo3,
-                VehicleHash.Massacro,
-                VehicleHash.Massacro2,
-                VehicleHash.Jester,
-                VehicleHash.Jester2,
-                VehicleHash.Jester3,
-                VehicleHash.Omnis,
-                VehicleHash.Lynx,
-                VehicleHash.Tropos,
-                VehicleHash.FlashGT,
-                VehicleHash.GT500,
-                VehicleHash.ItaliGTB,
-                VehicleHash.ItaliGTB2,
-                VehicleHash.ItaliGTO,
-                VehicleHash.SultanRS,
-                VehicleHash.Kamacho,
-                VehicleHash.Kuruma,
-                VehicleHash.Kuruma2,
-                VehicleHash.Neon,
-                VehicleHash.Ruston,
-                VehicleHash.Schlagen,
-                VehicleHash.Schafter2,
-                VehicleHash.Schafter3,
-                VehicleHash.Schafter4,
-                VehicleHash.Schafter5,
-                VehicleHash.Specter,
-                VehicleHash.Specter2,
-                VehicleHash.Surano,
-                VehicleHash.Radi
-            };
+                VehicleHash.Pfister811,
+                VehicleHash.Adder
+            });
 
-            var random = new Random();
-            var vehicleIndex = random.Next(vehicles.Count);
-            return vehicles[vehicleIndex];
+            if (configuration.VehicleType == "All")
+            {
+                var allVehicles = vehicles.SelectMany(x => x.Value).ToList();
+
+                var random = new Random();
+                var vehicleIndex = random.Next(vehicles.Count);
+                return allVehicles[vehicleIndex];
+            }
+            else
+            {
+                var random = new Random();
+                var vehicleIndex = random.Next(vehicles[configuration.VehicleType].Count);
+                return vehicles[configuration.VehicleType][vehicleIndex];
+            }
         }
     }
 }

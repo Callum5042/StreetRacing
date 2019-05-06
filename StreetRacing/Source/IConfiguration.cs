@@ -23,5 +23,9 @@ namespace StreetRacing.Source
         float WinDistance { get; }
 
         int Money { get; }
+
+        string VehicleType { get; }
+
+        bool PolicePursuit { get; }
     }
 }

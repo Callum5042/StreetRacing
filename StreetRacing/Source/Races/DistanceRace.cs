@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
+using GTA.Native;
 using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
 using System;
@@ -53,7 +54,21 @@ namespace StreetRacing.Source.Races
                 }
                 
                 Tick();
+                DeployPolice();
+
                 UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer)?.RacePosition} - Count: {Racers.Where(x => x.RacePosition == 1).Count()}");
+            }
+        }
+
+        protected void DeployPolice()
+        {
+            if (configuration.PolicePursuit)
+            {
+                var vehicles = World.GetNearbyVehicles(Game.Player.Character.Position, 100f).Where(x => x.Driver.IsInPoliceVehicle);
+                if (vehicles.Any(x => x.IsOnScreen))
+                {
+                    Game.Player.WantedLevel = 1;
+                }
             }
         }
 
@@ -61,33 +76,22 @@ namespace StreetRacing.Source.Races
         {
             foreach (var driver in Racers.ToList())
             {
-                if (driver.IsPlayer)
-                {
-                    if (driver.RacePosition == 1)
-                    {
-                        if (Racers.Count > 1)
-                        {
-                            var driverSecond = Racers.FirstOrDefault(x => x.RacePosition == 2);
-                            if (driverSecond != null)
-                            {
-                                var distance = driver.Distance(driverSecond);
-                            }
-                        }
-                    }
-                }
-
                 if (driver.RacePosition != 1)
                 {
-                    if (driver.Distance(Racers.FirstOrDefault(x => x.RacePosition == 1)) > configuration.WinDistance)
+                    var first = Racers.FirstOrDefault(x => x.RacePosition == 1);
+                    if (first != null)
                     {
-                        UI.Notify($"{driver.ToString()} lose");
-
-                        driver.Lost();
-                        Racers.Remove(driver);
-
-                        if (driver.IsPlayer)
+                        if (driver.DistanceTo(first) > configuration.WinDistance)
                         {
-                            IsRacing = false;
+                            UI.Notify($"{driver.ToString()} lose");
+
+                            driver.Lost();
+                            Racers.Remove(driver);
+
+                            if (driver.IsPlayer)
+                            {
+                                IsRacing = false;
+                            }
                         }
                     }
                 }
@@ -131,7 +135,7 @@ namespace StreetRacing.Source.Races
         {
             foreach (var racer in Racers)
             {
-                foreach (var otherRacer in Racers.Where(x => x != racer && racer.Distance(x) < 50f))
+                foreach (var otherRacer in Racers.Where(x => x != racer && racer.DistanceTo(x) < 50f))
                 {
                     if (racer.InFront(otherRacer))
                     {

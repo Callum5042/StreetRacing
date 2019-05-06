@@ -41,7 +41,7 @@ namespace StreetRacing.Source.Racers
             Vehicle.CurrentBlip.Remove();
         }
 
-        public float Distance(IRacingDriver driver)
+        public float DistanceTo(IRacingDriver driver)
         {
             if (driver == null)
             {
@@ -114,13 +114,17 @@ namespace StreetRacing.Source.Racers
                 }
                 else
                 {
-                    if (Distance(Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1)) < 20f)
+                    var firstPlace = Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1);
+                    if (firstPlace != null)
                     {
-                        SetTask(new DriverTaskCruise());
-                    }
-                    else
-                    {
-                        SetTask(new DriverTaskChase(Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1)));
+                        if (DistanceTo(firstPlace) < 20f)
+                        {
+                            SetTask(new DriverTaskCruise());
+                        }
+                        else
+                        {
+                            SetTask(new DriverTaskChase(firstPlace));
+                        }
                     }
                 }
             }
