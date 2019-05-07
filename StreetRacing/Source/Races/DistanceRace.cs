@@ -56,7 +56,7 @@ namespace StreetRacing.Source.Races
                 Tick();
                 DeployPolice();
 
-                UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer)?.RacePosition} - Count: {Racers.Where(x => x.RacePosition == 1).Count()}");
+                UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer)?.RacePosition}");
             }
         }
 
