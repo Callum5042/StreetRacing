@@ -21,7 +21,6 @@ namespace StreetRacing.Source.Interface
             AddMenuActive(mainMenu);
             AddMenuSetMax(mainMenu);
             AddMenuSpawnCount(mainMenu);
-            AddMenuSpawnVehicleTypes(mainMenu);
             AddMenuPolicePursuit(mainMenu);
 
             // Add save config
@@ -110,27 +109,6 @@ namespace StreetRacing.Source.Interface
                 if (item == newitem)
                 {
                     SpawnCount = (int)item.IndexToItem(index);
-                }
-            };
-        }
-
-        private void AddMenuSpawnVehicleTypes(UIMenu menu)
-        {
-            var vehicleTypes = new List<dynamic>
-            {
-                "All",
-                "Sports",
-                "Super",
-                "Off-road"
-            };
-
-            var newitem = new UIMenuListItem("Vehicle Type", vehicleTypes, VehicleType.IndexOf(VehicleType));
-            menu.AddItem(newitem);
-            menu.OnListChange += (sender, item, index) =>
-            {
-                if (item == newitem)
-                {
-                    VehicleType = item.IndexToItem(index) as string;
                 }
             };
         }

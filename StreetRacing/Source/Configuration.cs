@@ -101,8 +101,6 @@ namespace StreetRacing.Source
 
         public int Money { get; protected set; } = 1000;
 
-        public string VehicleType { get; protected set; } = "All";
-
         public bool PolicePursuit { get; protected set; } = true;
     }
 }

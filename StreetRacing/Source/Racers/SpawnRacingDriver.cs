@@ -24,27 +24,55 @@ namespace StreetRacing.Source.Racers
 
         private VehicleHash SpawnRandomVehicle()
         {
-            var vehicles = new Dictionary<string, IList<VehicleHash>>();
-            vehicles.Add("Super", new List<VehicleHash>()
+            var vehicles = new List<VehicleHash>()
             {
                 VehicleHash.Pfister811,
-                VehicleHash.Adder
-            });
+                VehicleHash.Adder,
+                VehicleHash.Dominator,
+                VehicleHash.Dominator2,
+                VehicleHash.Dominator3,
+                VehicleHash.Dominator4,
+                VehicleHash.Dominator5,
+                VehicleHash.HotringSabre,
+                VehicleHash.SabreGT,
+                VehicleHash.SabreGT2,
+                VehicleHash.Tyrant,
+                VehicleHash.Deveste,
+                VehicleHash.EntityXF,
+                VehicleHash.EntityXXR,
+                VehicleHash.Cyclone,
+                VehicleHash.ItaliGTB,
+                VehicleHash.ItaliGTB2,
+                VehicleHash.ItaliGTO,
+                VehicleHash.Nero,
+                VehicleHash.Nero2,
+                VehicleHash.Tyrus,
+                VehicleHash.Pfister811,
+                VehicleHash.Banshee,
+                VehicleHash.Banshee2,
+                VehicleHash.Reaper,
+                VehicleHash.SultanRS,
+                VehicleHash.Sultan,
+                VehicleHash.FlashGT,
+                VehicleHash.Neon,
+                VehicleHash.Nero,
+                VehicleHash.Nero2,
+                VehicleHash.Comet2,
+                VehicleHash.Comet3,
+                VehicleHash.Comet4,
+                VehicleHash.Comet5,
+                VehicleHash.Elegy,
+                VehicleHash.Elegy2,
+                VehicleHash.Specter,
+                VehicleHash.Specter2,
+                VehicleHash.Seven70,
+                VehicleHash.Lynx,
+                VehicleHash.Omnis
+            };
 
-            if (configuration.VehicleType == "All")
-            {
-                var allVehicles = vehicles.SelectMany(x => x.Value).ToList();
-
-                var random = new Random();
-                var vehicleIndex = random.Next(vehicles.Count);
-                return allVehicles[vehicleIndex];
-            }
-            else
-            {
-                var random = new Random();
-                var vehicleIndex = random.Next(vehicles[configuration.VehicleType].Count);
-                return vehicles[configuration.VehicleType][vehicleIndex];
-            }
+            var random = new Random();
+            var vehicleIndex = random.Next(vehicles.Count);
+            return vehicles[vehicleIndex];
         }
     }
 }

@@ -24,8 +24,6 @@ namespace StreetRacing.Source
 
         int Money { get; }
 
-        string VehicleType { get; }
-
         bool PolicePursuit { get; }
     }
 }
