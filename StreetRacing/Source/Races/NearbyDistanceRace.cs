@@ -8,10 +8,8 @@ namespace StreetRacing.Source.Races
     {
         public NearbyDistanceRace(IConfiguration configuration) : base(configuration)
         {
-            Racers.Add(new PlayerRacingDriver());
-            Racers.Add(new NearbyRacingDriver(configuration));
-
-            CalculateStartPositions();
+            Racers.Add(new PlayerRacingDriver() { RacePosition = 2 });
+            Racers.Add(new NearbyRacingDriver(configuration) { RacePosition = 1 });
         }
 
         public override void Finish()
