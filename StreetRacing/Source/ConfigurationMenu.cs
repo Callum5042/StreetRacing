@@ -2,6 +2,7 @@
 using NativeUI;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace StreetRacing.Source.Interface
@@ -23,10 +24,37 @@ namespace StreetRacing.Source.Interface
             AddMenuSpawnCount(mainMenu);
             AddMenuPolicePursuit(mainMenu);
 
+            AddMenuAnotherMenu(mainMenu);
+
             // Add save config
             AddSaveConfig(mainMenu);
             
             menuPool.RefreshIndex();
+        }
+
+        public void AddMenuAnotherMenu(UIMenu menu)
+        {
+            var submenu = menuPool.AddSubMenu(menu, "Customize");
+            AddRecordTrackToggle(submenu);
+            SaveTrack(submenu);
+        }
+
+        private void AddRecordTrackToggle(UIMenu menu)
+        {
+            var newitem = new UIMenuCheckboxItem("Record Track", RecordTrack);
+            menu.AddItem(newitem);
+            menu.OnCheckboxChange += (sender, item, @checked) =>
+            {
+                if (item == newitem)
+                {
+                    RecordTrack = @checked;
+                }
+            };
+        }
+
+        private void SaveTrack(UIMenu menu)
+        {
+
         }
 
         private void AddMenuPolicePursuit(UIMenu menu)

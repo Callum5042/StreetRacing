@@ -56,6 +56,7 @@
     <Compile Include="Source\Races\SpawnDistanceRace.cs" />
     <Compile Include="Source\Races\DistanceRace.cs" />
     <Compile Include="Source\Configuration.cs" />
+    <Compile Include="Source\Races\SprintRace.cs" />
     <Compile Include="Source\Tasks\DriverTask.cs" />
     <Compile Include="Source\Tasks\DriverTaskChase.cs" />
     <Compile Include="Source\Tasks\DriverTaskNone.cs" />

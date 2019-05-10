@@ -152,5 +152,7 @@ namespace StreetRacing.Source.Racers
                 Lost();
             }
         }
+
+        public int Checkpoint { get; set; }
     }
 }

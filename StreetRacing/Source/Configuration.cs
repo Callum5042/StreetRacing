@@ -1,8 +1,11 @@
 ﻿using GTA;
+using GTA.Math;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace StreetRacing.Source
 {
@@ -85,6 +88,29 @@ namespace StreetRacing.Source
             }
         }
 
+        public void SaveCheckpoints(IList<Vector3> checkpoints)
+        {
+            var doc = new XDocument();
+            var root = new XElement("root");
+            doc.Add(root);
+
+            foreach (var checkpoint in checkpoints)
+            {
+                var element = new XElement("checkpoint");
+                element.Add(new XAttribute("X", checkpoint.X));
+                element.Add(new XAttribute("Y", checkpoint.Y));
+                element.Add(new XAttribute("Z", checkpoint.Z));
+                root.Add(element);
+            }
+
+            doc.Save("scripts/streetracing/checkpoints.xml");
+        }
+
+        public void LoadCheckpoints()
+        {
+            throw new NotImplementedException();
+        }
+
         public Keys MenuKey { get; protected set; } = Keys.F8;
 
         public Keys StartNearbyKey { get; protected set; } = Keys.E;
@@ -102,5 +128,7 @@ namespace StreetRacing.Source
         public int Money { get; protected set; } = 1000;
 
         public bool PolicePursuit { get; protected set; } = true;
+
+        public bool RecordTrack { get; protected set; }
     }
 }

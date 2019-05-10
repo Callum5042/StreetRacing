@@ -26,5 +26,7 @@ namespace StreetRacing.Source.Racers
         bool InFront(IRacingDriver driver);
 
         void Tick();
+
+        int Checkpoint { get; set; }
     }
 }
