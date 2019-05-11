@@ -1,10 +1,12 @@
 ﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using NativeUI;
 using StreetRacing.Source.Racers;
 using StreetRacing.Source.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -14,6 +16,18 @@ namespace StreetRacing.Source.Races
     {
         protected readonly IConfiguration configuration;
 
+        protected TimerBarPool timerBarPool;
+
+        private TextTimerBar timeBar;
+
+        private TextTimerBar positionBar;
+
+        private TimeSpan time;
+
+        private readonly DateTime StartTime = DateTime.Now;
+
+        private BarTimerBar distanceBar;
+
         public DistanceRace(IConfiguration configuration)
         {
             this.configuration = configuration;
@@ -22,6 +36,23 @@ namespace StreetRacing.Source.Races
             {
                 throw new InvalidOperationException("Already in a race");
             }
+
+            // GUI
+            timerBarPool = new TimerBarPool();
+            timeBar = new TextTimerBar("Time", "0:00");
+            timerBarPool.Add(timeBar);
+
+            positionBar = new TextTimerBar("Position", "");
+            timerBarPool.Add(positionBar);
+
+            distanceBar = new BarTimerBar("Distance");
+            distanceBar.Percentage = 0.5f; // Half full
+            distanceBar.Percentage = 0.0f; // Full bar
+            timerBarPool.Add(distanceBar);
+
+            // You can easily modify the bar color.
+            distanceBar.BackgroundColor = Color.Black;
+            distanceBar.ForegroundColor = Color.White;
         }
         
         public IList<IRacingDriver> Racers { get; protected set; } = new List<IRacingDriver>();
@@ -31,6 +62,9 @@ namespace StreetRacing.Source.Races
         public virtual void Finish()
         {
             IsRacing = false;
+
+            var player = Racers.FirstOrDefault(x => x.IsPlayer);
+            BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
         }
 
         public virtual void OnTick(object sender, EventArgs e)
@@ -55,8 +89,30 @@ namespace StreetRacing.Source.Races
                 
                 Tick();
                 DeployPolice();
+                
+                // Draw
+                var player = Racers.FirstOrDefault(x => x.IsPlayer);
+                positionBar.Text = player?.RacePosition.ToString();
+                time = StartTime.Subtract(DateTime.Now);
+                timeBar.Text = time.ToString(@"mm\:ss\:fff");
 
-                UI.ShowSubtitle($"Position: {Racers.FirstOrDefault(x => x.IsPlayer)?.RacePosition}");
+                float distance = 0;
+                if (player != null)
+                {
+                    if (player.RacePosition == 1)
+                    {
+                        distance = player.DistanceTo(Racers.FirstOrDefault(x => x.RacePosition == 2));
+                    }
+                    else
+                    {
+                        distance = player.DistanceTo(Racers.FirstOrDefault(x => x.RacePosition == 1));
+                    }
+                }
+
+                UI.ShowSubtitle($"Distance: {distance} : {configuration.WinDistance}");
+                distanceBar.Percentage = distance / configuration.WinDistance;
+
+                timerBarPool.Draw();
             }
         }
 

@@ -68,8 +68,6 @@ namespace StreetRacing.Source.Races
 
             positionBar = new TextTimerBar("Position", "");
             timerBarPool.Add(positionBar);
-
-            var test = new UIText("Test", new Point(20, 20), 1.0f);
         }
 
         public bool IsRacing { get; protected set; } = true;
