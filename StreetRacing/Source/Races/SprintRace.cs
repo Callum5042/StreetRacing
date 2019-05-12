@@ -1,26 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using GTA;
+﻿using GTA;
 using GTA.Math;
 using NativeUI;
 using StreetRacing.Source.Racers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class Checkpoint
-    {
-        public int Number { get; set; }
-
-        public Vector3 Position { get; set; }
-
-        public Blip Blip { get; set; }
-    }
-
     public class SprintRace : IStreetRace
     {
         protected TimerBarPool timerBarPool;
@@ -35,8 +23,12 @@ namespace StreetRacing.Source.Races
 
         private TimeSpan time;
 
-        public SprintRace()
+        private readonly IConfiguration configuration;
+
+        public SprintRace(IConfiguration configuration)
         {
+            this.configuration = configuration;
+
             // Load race
             var document = XDocument.Load("scripts/streetracing/checkpoints.xml");
             foreach (XElement item in document.Descendants().Where(x => x.Name == "checkpoint"))
@@ -46,20 +38,25 @@ namespace StreetRacing.Source.Races
                 var zCoord = float.Parse(item.Attributes().FirstOrDefault(x => x.Name == "Z").Value);
 
                 var number = Checkpoints.Count + 1;
-                var position = new Vector3(xCoord, yCoord, zCoord);
-                var blip = World.CreateBlip(position);
+                var racePosition = new Vector3(xCoord, yCoord, zCoord);
+                var blip = World.CreateBlip(racePosition);
                 blip.ShowNumber(number);
 
                 Checkpoints.Add(new Checkpoint()
                 {
                     Number = number,
-                    Position = position,
+                    Position = racePosition,
                     Blip = blip
                 });
             }
 
             // Add Racers
             Racers.Add(new PlayerRacingDriver());
+            var playerPosition = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * 1));
+
+            var otherRacer = new SpawnRacingDriver(configuration, playerPosition);
+            Racers.Add(otherRacer);
+            otherRacer.Vehicle.Driver.Task.DriveTo(otherRacer.Vehicle.Driver.CurrentVehicle, Checkpoints.FirstOrDefault().Position, 20f, 200f);
 
             // GUI
             timerBarPool = new TimerBarPool();
@@ -81,14 +78,41 @@ namespace StreetRacing.Source.Races
                 checkpoint.Blip.Remove();
             }
 
+            foreach (var driver in Racers.Where(x => !x.IsPlayer))
+            {
+                driver.Vehicle.CurrentBlip.Remove();
+                driver.Driver.Delete();
+                driver.Vehicle.Delete();
+            }
+
             var player = Racers.FirstOrDefault(x => x.IsPlayer);
             BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
         }
 
         public void OnTick(object sender, EventArgs e)
         {
-            var player = Racers.FirstOrDefault(x => x.IsPlayer);
+            foreach (var racer in Racers.Where(x => !x.IsPlayer))
+            {
+                var driver = racer.Vehicle.Driver;
+                var nextCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == racer.Checkpoint + 1);
+                if (driver.Position.DistanceTo(nextCheckpoint.Position) < 20f)
+                {
+                    racer.Checkpoint = nextCheckpoint.Number;
 
+                    var driveToCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == racer.Checkpoint + 1);
+                    if (driveToCheckpoint != null)
+                    {
+                        driver.Task.DriveTo(driver.CurrentVehicle, driveToCheckpoint.Position, 20f, 200f);
+                    }
+                    else
+                    {
+                        racer.Lost();
+                    }
+                }
+            }
+
+
+            var player = Racers.FirstOrDefault(x => x.IsPlayer);
             if (player != null)
             {
                 var nextCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == player.Checkpoint + 1);

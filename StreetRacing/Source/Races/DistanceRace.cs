@@ -101,7 +101,11 @@ namespace StreetRacing.Source.Races
                 {
                     if (player.RacePosition == 1)
                     {
-                        distance = player.DistanceTo(Racers.FirstOrDefault(x => x.RacePosition == 2));
+                        var secondPlace = Racers.FirstOrDefault(x => x.RacePosition == 2);
+                        if (secondPlace != null)
+                        {
+                            distance = player.DistanceTo(secondPlace);
+                        }
                     }
                     else
                     {
@@ -109,9 +113,7 @@ namespace StreetRacing.Source.Races
                     }
                 }
 
-                UI.ShowSubtitle($"Distance: {distance} : {configuration.WinDistance}");
                 distanceBar.Percentage = distance / configuration.WinDistance;
-
                 timerBarPool.Draw();
             }
         }

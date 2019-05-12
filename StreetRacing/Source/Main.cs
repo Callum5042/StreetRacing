@@ -93,7 +93,7 @@ namespace StreetRacing.Source
             if (e.KeyCode == Keys.Y)
             {
                 UI.ShowSubtitle("Start sprint");
-                Race = new SprintRace();
+                Race = new SprintRace(configuration);
                 Tick += Race.OnTick;
             }
 

@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Source\IConfiguration.cs" />
     <Compile Include="Source\ConfigurationMenu.cs" />
+    <Compile Include="Source\Races\Checkpoint.cs" />
     <Compile Include="Source\Races\IStreetRace.cs" />
     <Compile Include="Source\Races\NearbyDistanceRace.cs" />
     <Compile Include="Source\Races\SpawnDistanceRace.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Source\Tasks\DriverTask.cs" />
     <Compile Include="Source\Tasks\DriverTaskChase.cs" />
     <Compile Include="Source\Tasks\DriverTaskNone.cs" />
+    <Compile Include="Source\Tasks\DriverTaskCheckpoint.cs" />
     <Compile Include="Source\Tasks\IDriverTask.cs" />
     <Compile Include="Source\Tasks\DriverTaskCruise.cs" />
     <Compile Include="Source\Main.cs" />
