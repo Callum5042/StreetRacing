@@ -32,10 +32,10 @@ namespace StreetRacing.Source.Races
         {
             this.configuration = configuration;
 
-            if (Main.Race?.IsRacing == true)
-            {
-                throw new InvalidOperationException("Already in a race");
-            }
+            //if (Main.Race?.IsRacing == true)
+            //{
+            //    throw new InvalidOperationException("Already in a race");
+            //}
 
             // GUI
             timerBarPool = new TimerBarPool();

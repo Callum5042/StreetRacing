@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace StreetRacing.Source.Interface
+namespace StreetRacing.Source
 {
     public class ConfigurationMenu : Configuration
     {

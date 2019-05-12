@@ -114,18 +114,18 @@ namespace StreetRacing.Source.Racers
                 }
                 else
                 {
-                    var firstPlace = Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1);
-                    if (firstPlace != null)
-                    {
-                        if (DistanceTo(firstPlace) < 20f)
-                        {
-                            SetTask(new DriverTaskCruise());
-                        }
-                        else
-                        {
-                            SetTask(new DriverTaskChase(firstPlace));
-                        }
-                    }
+                    //var firstPlace = Main.Race.Racers.FirstOrDefault(x => x.RacePosition == 1);
+                    //if (firstPlace != null)
+                    //{
+                    //    if (DistanceTo(firstPlace) < 20f)
+                    //    {
+                    //        SetTask(new DriverTaskCruise());
+                    //    }
+                    //    else
+                    //    {
+                    //        SetTask(new DriverTaskChase(firstPlace));
+                    //    }
+                    //}
                 }
             }
         }
