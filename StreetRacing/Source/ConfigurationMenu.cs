@@ -2,7 +2,6 @@
 using NativeUI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace StreetRacing.Source
@@ -18,56 +17,21 @@ namespace StreetRacing.Source
 
             mainMenu = new UIMenu("Street Racing", "Configuration");
             menuPool.Add(mainMenu);
+
+            AddCheckbox(nameof(Active), Active, x => Active = x);
+            AddCheckbox("Police Pursit", PolicePursuit, x => PolicePursuit = x);
+
+            AddButton("Save configuration", () => 
+            {
+                UI.Notify("Saved config");
+                Save();
+            });
             
-            AddMenuActive(mainMenu);
-            AddMenuSetMax(mainMenu);
+            // Old
             AddMenuSpawnCount(mainMenu);
-            AddMenuPolicePursuit(mainMenu);
-
             AddMenuAnotherMenu(mainMenu);
-
-            // Add save config
-            AddSaveConfig(mainMenu);
             
             menuPool.RefreshIndex();
-        }
-
-        public void AddMenuAnotherMenu(UIMenu menu)
-        {
-            var submenu = menuPool.AddSubMenu(menu, "Customize");
-            AddRecordTrackToggle(submenu);
-            SaveTrack(submenu);
-        }
-
-        private void AddRecordTrackToggle(UIMenu menu)
-        {
-            var newitem = new UIMenuCheckboxItem("Record Track", RecordTrack);
-            menu.AddItem(newitem);
-            menu.OnCheckboxChange += (sender, item, @checked) =>
-            {
-                if (item == newitem)
-                {
-                    RecordTrack = @checked;
-                }
-            };
-        }
-
-        private void SaveTrack(UIMenu menu)
-        {
-
-        }
-
-        private void AddMenuPolicePursuit(UIMenu menu)
-        {
-            var newitem = new UIMenuCheckboxItem("Police Pursit", PolicePursuit);
-            menu.AddItem(newitem);
-            menu.OnCheckboxChange += (sender, item, @checked) =>
-            {
-                if (item == newitem)
-                {
-                    PolicePursuit = @checked;
-                }
-            };
         }
 
         public void OnTick(object sender, EventArgs e)
@@ -83,42 +47,47 @@ namespace StreetRacing.Source
             }
         }
 
-        private void AddMenuActive(UIMenu menu)
+        private void AddButton(string name, Action action)
         {
-            var newitem = new UIMenuCheckboxItem("Active", Active);
-            menu.AddItem(newitem);
-            menu.OnCheckboxChange += (sender, item, @checked) =>
+            var newitem = new UIMenuItem(name);
+            mainMenu.AddItem(newitem);
+            mainMenu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == newitem)
                 {
-                    Active = @checked;
+                    action?.Invoke();
                 }
             };
         }
 
-        private void AddMenuSetMax(UIMenu menu)
+        public void AddMenuAnotherMenu(UIMenu menu)
         {
-            var newitem = new UIMenuCheckboxItem("Set Max", MaxMods);
-            menu.AddItem(newitem);
-            menu.OnCheckboxChange += (sender, item, @checked) =>
-            {
-                if (item == newitem)
-                {
-                    MaxMods = @checked;
-                }
-            };
+            var submenu = menuPool.AddSubMenu(menu, "Customize");
+            //AddRecordTrackToggle(submenu);
         }
 
-        private void AddSaveConfig(UIMenu menu)
+        //private void AddRecordTrackToggle(UIMenu menu)
+        //{
+        //    var newitem = new UIMenuCheckboxItem("Record Track", RecordTrack);
+        //    menu.AddItem(newitem);
+        //    menu.OnCheckboxChange += (sender, item, @checked) =>
+        //    {
+        //        if (item == newitem)
+        //        {
+        //            RecordTrack = @checked;
+        //        }
+        //    };
+        //}
+
+        private void AddCheckbox(string name, bool value, Func<bool, bool> func)
         {
-            var newitem = new UIMenuItem("Save configuration");
-            menu.AddItem(newitem);
-            menu.OnItemSelect += (sender, item, index) =>
+            var newitem = new UIMenuCheckboxItem(name, value);
+            mainMenu.AddItem(newitem);
+            mainMenu.OnCheckboxChange += (sender, item, @checked) =>
             {
                 if (item == newitem)
                 {
-                    UI.Notify("Saved config");
-                    Save();
+                    func?.Invoke(@checked);
                 }
             };
         }

@@ -40,6 +40,8 @@ namespace StreetRacing.Source
 
         private void OnTick(object sender, EventArgs e)
         {
+            UI.ShowSubtitle(configuration.Active.ToString());
+
             if (CurrentRace?.IsRacing == true)
             {
                 CurrentRace.Tick();
