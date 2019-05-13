@@ -156,37 +156,6 @@ namespace StreetRacing.Source.New.Races
 
         private void ComputerAI()
         {
-            //foreach (var driver in Drivers.Where(x => !x.IsPlayer).ToList())
-            //{
-            //    driver.UpdateBlip();
-
-            //    if (driver.RacePosition == 1)
-            //    {
-            //        if (driver is ITask task)
-            //        {
-            //            task.Cruise();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
-            //        if (firstPlace != null)
-            //        {
-            //            if (driver is ITask task)
-            //            {
-            //                if (driver.DistanceTo(firstPlace.Position) < 20f)
-            //                {
-            //                    task.Cruise();
-            //                }
-            //                else
-            //                {
-            //                    task.Chase(firstPlace);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
             // Set first to cruise
             var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
             if (!firstPlace.IsPlayer)
@@ -204,11 +173,11 @@ namespace StreetRacing.Source.New.Races
                 {
                     if (driver.DistanceTo(firstPlace.Position) < 20f)
                     {
-                        task.Chase(firstPlace);
+                        task.Cruise();
                     }
                     else
                     {
-                        task.Cruise();
+                        task.Chase(firstPlace);
                     }
                 }
             }

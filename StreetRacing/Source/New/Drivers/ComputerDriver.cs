@@ -38,7 +38,7 @@ namespace StreetRacing.Source.New.Drivers
 
         public Vector3 ForwardVector => Vehicle.ForwardVector;
 
-        public DriverTask DriverTask { get; protected set; }
+        public DriverTask DriverTask { get; protected set; } = DriverTask.None;
 
         public Vehicle Vehicle { get; protected set; }
 
@@ -57,11 +57,7 @@ namespace StreetRacing.Source.New.Drivers
 
         public void DriveTo(Vector3 position)
         {
-            if (DriverTask != DriverTask.Checkpoint)
-            {
-                DriverTask = DriverTask.Checkpoint;
-                Vehicle.Driver.Task.DriveTo(Vehicle, position, 20f, 200f, drivingStyle);
-            }
+            Vehicle.Driver.Task.DriveTo(Vehicle, position, 20f, 200f, drivingStyle);
         }
 
         public void Cruise()
