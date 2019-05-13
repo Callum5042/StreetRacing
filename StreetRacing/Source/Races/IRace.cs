@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StreetRacing.Source.New.Races
+namespace StreetRacing.Source.Races
 {
     public interface IRace : IDisposable
     {

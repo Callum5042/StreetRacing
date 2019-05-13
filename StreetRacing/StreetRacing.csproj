@@ -67,28 +67,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Gui\DistanceGui.cs" />
+    <Compile Include="Source\Gui\SprintGui.cs" />
     <Compile Include="Source\IConfiguration.cs" />
     <Compile Include="Source\ConfigurationMenu.cs" />
-    <Compile Include="Source\New\Drivers\ComputerDriver.cs" />
-    <Compile Include="Source\New\Drivers\ITask.cs" />
-    <Compile Include="Source\New\Drivers\IDriver.cs" />
-    <Compile Include="Source\New\Drivers\PlayerDriver.cs" />
-    <Compile Include="Source\New\Races\DistanceRace.cs" />
-    <Compile Include="Source\New\Races\IRace.cs" />
-    <Compile Include="Source\New\Races\SprintRace.cs" />
+    <Compile Include="Source\Drivers\ComputerDriver.cs" />
+    <Compile Include="Source\Drivers\ITask.cs" />
+    <Compile Include="Source\Drivers\IDriver.cs" />
+    <Compile Include="Source\Drivers\PlayerDriver.cs" />
+    <Compile Include="Source\Races\DistanceRace.cs" />
+    <Compile Include="Source\Races\IRace.cs" />
+    <Compile Include="Source\Races\SprintRace.cs" />
     <Compile Include="Source\RaceStart.cs" />
-    <Compile Include="Source\New\Races\Checkpoint.cs" />
+    <Compile Include="Source\Races\Checkpoint.cs" />
     <Compile Include="Source\Configuration.cs" />
     <Compile Include="Source\StreetRacing.cs" />
-    <Compile Include="Source\New\Drivers\DriverTask.cs" />
+    <Compile Include="Source\Drivers\DriverTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\New\Gui\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>COPY "$(TargetPath)" "E:\Steam\steamapps\common\Grand Theft Auto V\scripts"</PostBuildEvent>

@@ -1,7 +1,8 @@
 ﻿using GTA;
 using GTA.Math;
 using NativeUI;
-using StreetRacing.Source.Racers;
+using StreetRacing.Source.Drivers;
+using StreetRacing.Source.Gui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +10,39 @@ using System.Xml.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class SprintRace : IStreetRace
+    public class SprintRace : IRace
     {
-        protected TimerBarPool timerBarPool;
-
-        private TextTimerBar timeBar;
-
-        private TextTimerBar positionBar;
-
-        public IList<Checkpoint> Checkpoints { get; set; } = new List<Checkpoint>();
-
-        private readonly DateTime StartTime = DateTime.Now;
-
+        private readonly IConfiguration configuration;
+        private readonly SprintGui sprintGUI = new SprintGui();
+        private readonly DateTime startTime = DateTime.Now;
         private TimeSpan time;
 
-        private readonly IConfiguration configuration;
+        public IList<Checkpoint> Checkpoints { get; protected set; } = new List<Checkpoint>();
 
-        public SprintRace(IConfiguration configuration)
+        public IList<IDriver> Drivers { get; protected set; } = new List<IDriver>();
+
+        public SprintRace(IConfiguration configuration, RaceStart raceStart)
         {
             this.configuration = configuration;
 
-            // Load race
+            LoadRaceFromFile(raceStart);
+            LoadDrivers(configuration);
+            CalculateStartPositions();
+            UI.Notify($"Race Started: {raceStart.Name}");
+        }
+
+        private void LoadDrivers(IConfiguration configuration)
+        {
+            Drivers.Add(new PlayerDriver(configuration));
+
+            var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * 6.0f);
+            Drivers.Add(new ComputerDriver(configuration, position));
+        }
+
+        private void LoadRaceFromFile(RaceStart raceStart)
+        {
             var document = XDocument.Load("scripts/streetracing/checkpoints.xml");
-            foreach (XElement item in document.Descendants().Where(x => x.Name == "checkpoint"))
+            foreach (XElement item in document.Descendants().Where(x => x.Name == "checkpoint" && x.Parent.Attributes().FirstOrDefault(p => p.Name == "name").Value == raceStart.Name))
             {
                 var xCoord = float.Parse(item.Attributes().FirstOrDefault(x => x.Name == "X").Value);
                 var yCoord = float.Parse(item.Attributes().FirstOrDefault(x => x.Name == "Y").Value);
@@ -49,93 +60,130 @@ namespace StreetRacing.Source.Races
                     Blip = blip
                 });
             }
-
-            // Add Racers
-            Racers.Add(new PlayerRacingDriver());
-            var playerPosition = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * 1));
-
-            var otherRacer = new SpawnRacingDriver(configuration, playerPosition);
-            Racers.Add(otherRacer);
-            otherRacer.Vehicle.Driver.Task.DriveTo(otherRacer.Vehicle.Driver.CurrentVehicle, Checkpoints.FirstOrDefault().Position, 20f, 200f);
-
-            // GUI
-            timerBarPool = new TimerBarPool();
-            timeBar = new TextTimerBar("Time", "0:00");
-            timerBarPool.Add(timeBar);
-
-            positionBar = new TextTimerBar("Position", "");
-            timerBarPool.Add(positionBar);
         }
 
         public bool IsRacing { get; protected set; } = true;
 
-        public IList<IRacingDriver> Racers { get; protected set; } = new List<IRacingDriver>();
-
-        public void Finish()
+        public void Tick()
         {
-            foreach (var checkpoint in Checkpoints)
+            time = startTime.Subtract(DateTime.Now);
+
+            foreach (var driver in Drivers)
             {
-                checkpoint.Blip.Remove();
+                driver.UpdateBlip();
             }
 
-            foreach (var driver in Racers.Where(x => !x.IsPlayer))
-            {
-                driver.Vehicle.CurrentBlip.Remove();
-                driver.Driver.Delete();
-                driver.Vehicle.Delete();
-            }
-
-            var player = Racers.FirstOrDefault(x => x.IsPlayer);
-            BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
+            CalculatePositions();
+            ComputerAI();
+            CheckCheckpointsBlips();
+            sprintGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time);
         }
 
-        public void OnTick(object sender, EventArgs e)
+        protected void CalculateStartPositions()
         {
-            foreach (var racer in Racers.Where(x => !x.IsPlayer))
+            foreach (var driver in Drivers)
             {
-                var driver = racer.Vehicle.Driver;
-                var nextCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == racer.Checkpoint + 1);
-                if (driver.Position.DistanceTo(nextCheckpoint.Position) < 20f)
+                driver.RacePosition = Drivers.Count;
+                foreach (var otherDriver in Drivers)
                 {
-                    racer.Checkpoint = nextCheckpoint.Number;
-
-                    var driveToCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == racer.Checkpoint + 1);
-                    if (driveToCheckpoint != null)
+                    if (driver != otherDriver)
                     {
-                        driver.Task.DriveTo(driver.CurrentVehicle, driveToCheckpoint.Position, 20f, 200f);
-                    }
-                    else
-                    {
-                        racer.Lost();
+                        if (driver.InFront(otherDriver))
+                        {
+                            driver.RacePosition--;
+                        }
                     }
                 }
             }
+        }
 
+        private void CalculatePositions()
+        {
+            foreach (var driver in Drivers)
+            {
+                foreach (var otherRacer in Drivers.Where(x => x != driver && driver.DistanceTo(x.Position) < 50f))
+                {
+                    if (driver.InFront(otherRacer))
+                    {
+                        if (driver.RacePosition > otherRacer.RacePosition)
+                        {
+                            int tmp = driver.RacePosition;
+                            driver.RacePosition = otherRacer.RacePosition;
+                            otherRacer.RacePosition = tmp;
+                        }
+                    }
+                }
+            }
+        }
 
-            var player = Racers.FirstOrDefault(x => x.IsPlayer);
+        private void ComputerAI()
+        {
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer && x.InRace))
+            {
+                if (driver is ITask task)
+                {
+                    var nextCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == driver.Checkpoint + 1);
+                    if (driver.DistanceTo(nextCheckpoint.Position) < 20f)
+                    {
+                        driver.Checkpoint = nextCheckpoint.Number;
+
+                        var driveToCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == driver.Checkpoint + 1);
+                        if (driveToCheckpoint != null)
+                        {
+                            task.DriveTo(driveToCheckpoint.Position);
+                        }
+                        else
+                        {
+                            task.Cruise();
+                            driver.Finish();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CheckCheckpointsBlips()
+        {
+            var player = Drivers.FirstOrDefault(x => x.IsPlayer);
             if (player != null)
             {
                 var nextCheckpoint = Checkpoints.FirstOrDefault(x => x.Number == player.Checkpoint + 1);
                 if (nextCheckpoint != null)
                 {
-                    if (player.Driver.Position.DistanceTo(nextCheckpoint.Position) < 20f)
+                    if (player.DistanceTo(nextCheckpoint.Position) < 20f)
                     {
                         nextCheckpoint.Blip.Remove();
                         player.Checkpoint = nextCheckpoint.Number;
                     }
                 }
 
+                UI.ShowSubtitle("Checkpoint: " + player.Checkpoint);
                 if (player.Checkpoint == Checkpoints.Max(x => x.Number))
                 {
-                    IsRacing = false;
+                    player.Finish();
+                    Finish();
                 }
             }
+        }
 
-            // Draw
-            positionBar.Text = player?.RacePosition.ToString();
-            time = StartTime.Subtract(DateTime.Now);
-            timeBar.Text = time.ToString(@"mm\:ss\:fff");
-            timerBarPool.Draw();
+        public void Finish()
+        {
+            IsRacing = false;
+            var player = Drivers.FirstOrDefault(x => x.IsPlayer);
+            BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
+        }
+        
+        public void Dispose()
+        {
+            foreach (var blip in Checkpoints.Select(x => x.Blip))
+            {
+                blip.Remove();
+            }
+
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            {
+                driver.Dispose();
+            }
         }
     }
 }

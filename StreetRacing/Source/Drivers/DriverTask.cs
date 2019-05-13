@@ -1,4 +1,4 @@
-﻿namespace StreetRacing.Source.Tasks
+﻿namespace StreetRacing.Source.Drivers
 {
     public enum DriverTask
     {

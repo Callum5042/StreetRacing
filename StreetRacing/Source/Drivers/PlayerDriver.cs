@@ -2,7 +2,7 @@
 using GTA.Math;
 using System;
 
-namespace StreetRacing.Source.New.Drivers
+namespace StreetRacing.Source.Drivers
 {
     public class PlayerDriver : IDriver
     {
@@ -22,6 +22,11 @@ namespace StreetRacing.Source.New.Drivers
         public float DistanceTo(Vector3 position)
         {
             return Game.Player.Character.CurrentVehicle.Position.DistanceTo(position);
+        }
+
+        public override string ToString()
+        {
+            return Vehicle.FriendlyName;
         }
 
         public void Dispose()

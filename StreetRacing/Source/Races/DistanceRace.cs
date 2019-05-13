@@ -1,120 +1,95 @@
 ﻿using GTA;
 using GTA.Math;
-using GTA.Native;
 using NativeUI;
-using StreetRacing.Source.Racers;
-using StreetRacing.Source.Tasks;
+using StreetRacing.Source.Drivers;
+using StreetRacing.Source.Gui;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 
 namespace StreetRacing.Source.Races
 {
-    public abstract class DistanceRace : IStreetRace
+    public class DistanceRace : IRace
     {
-        protected readonly IConfiguration configuration;
-
-        protected TimerBarPool timerBarPool;
-
-        private TextTimerBar timeBar;
-
-        private TextTimerBar positionBar;
-
+        private readonly IConfiguration configuration;
+        private readonly DistanceRaceGui distanceRaceGUI = new DistanceRaceGui();
+        private readonly DateTime startTime = DateTime.Now;
         private TimeSpan time;
 
-        private readonly DateTime StartTime = DateTime.Now;
-
-        private BarTimerBar distanceBar;
+        public IList<IDriver> Drivers { get; protected set; } = new List<IDriver>();
 
         public DistanceRace(IConfiguration configuration)
         {
             this.configuration = configuration;
 
-            //if (Main.Race?.IsRacing == true)
-            //{
-            //    throw new InvalidOperationException("Already in a race");
-            //}
-
-            // GUI
-            timerBarPool = new TimerBarPool();
-            timeBar = new TextTimerBar("Time", "0:00");
-            timerBarPool.Add(timeBar);
-
-            positionBar = new TextTimerBar("Position", "");
-            timerBarPool.Add(positionBar);
-
-            distanceBar = new BarTimerBar("Distance");
-            distanceBar.Percentage = 0.5f; // Half full
-            distanceBar.Percentage = 0.0f; // Full bar
-            timerBarPool.Add(distanceBar);
-
-            // You can easily modify the bar color.
-            distanceBar.BackgroundColor = Color.Black;
-            distanceBar.ForegroundColor = Color.White;
+            LoadVehicles();
+            CalculateStartPositions();
+            UI.Notify($"Race Started: Distance");
         }
-        
-        public IList<IRacingDriver> Racers { get; protected set; } = new List<IRacingDriver>();
 
         public bool IsRacing { get; protected set; } = true;
 
-        public virtual void Finish()
+        public void Dispose()
         {
-            IsRacing = false;
-
-            var player = Racers.FirstOrDefault(x => x.IsPlayer);
-            BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            {
+                driver.Dispose();
+            }
         }
 
-        public virtual void OnTick(object sender, EventArgs e)
+        public void Tick()
         {
-            if (IsRacing)
-            {
-                CalculateDriversPosition();
+            time = startTime.Subtract(DateTime.Now);
 
-                foreach (var racer in Racers.ToList())
+            CalculatePositions();
+            ComputerAI();
+
+            float distance = GetDistance();
+            CheckPlayState(distance);
+
+            DeployPolice();
+            UpdateBlips();
+            distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, distance / configuration.WinDistance);
+        }
+
+        private void CheckPlayState(float distance)
+        {
+            foreach (var driver in Drivers.ToList())
+            {
+                if (driver.RacePosition != 1)
                 {
-                    racer.Tick();
-                    if (!racer.InRace)
+                    var first = Drivers.FirstOrDefault(x => x.RacePosition == 1);
+                    if (first != null)
                     {
-                        Racers.Remove(racer);
-                        
-                        foreach (var racerBehind in Racers.Where(x => x.RacePosition > racer.RacePosition))
+                        if (driver.DistanceTo(first.Position) > configuration.WinDistance)
                         {
-                            racerBehind.RacePosition--;
+                            UI.Notify($"{driver.ToString()} lose");
+
+                            driver.Finish();
+                            Drivers.Remove(driver);
+
+                            if (driver.IsPlayer)
+                            {
+                                Finish();
+                            }
                         }
                     }
                 }
-                
-                Tick();
-                DeployPolice();
-                
-                // Draw
-                var player = Racers.FirstOrDefault(x => x.IsPlayer);
-                positionBar.Text = player?.RacePosition.ToString();
-                time = StartTime.Subtract(DateTime.Now);
-                timeBar.Text = time.ToString(@"mm\:ss\:fff");
 
-                float distance = 0;
-                if (player != null)
+                if (Drivers.Count == 1 || !IsRacing)
                 {
-                    if (player.RacePosition == 1)
+                    Finish();
+                    if (Drivers.FirstOrDefault(x => x.RacePosition == 1)?.IsPlayer == true)
                     {
-                        var secondPlace = Racers.FirstOrDefault(x => x.RacePosition == 2);
-                        if (secondPlace != null)
-                        {
-                            distance = player.DistanceTo(secondPlace);
-                        }
+                        UI.Notify($"You win");
+                        Game.Player.Money += configuration.Money;
                     }
                     else
                     {
-                        distance = player.DistanceTo(Racers.FirstOrDefault(x => x.RacePosition == 1));
+                        UI.Notify($"You lose");
+                        Game.Player.Money -= configuration.Money;
                     }
                 }
-
-                distanceBar.Percentage = distance / configuration.WinDistance;
-                timerBarPool.Draw();
             }
         }
 
@@ -130,53 +105,43 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        protected virtual void Tick()
+        private void UpdateBlips()
         {
-            foreach (var driver in Racers.ToList())
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
             {
-                if (driver.RacePosition != 1)
+                driver.UpdateBlip();
+            }
+        }
+
+        private float GetDistance()
+        {
+            var player = Drivers.FirstOrDefault(x => x.IsPlayer);
+            float distance = 0;
+            if (player != null)
+            {
+                if (player.RacePosition == 1)
                 {
-                    var first = Racers.FirstOrDefault(x => x.RacePosition == 1);
-                    if (first != null)
+                    var secondPlace = Drivers.FirstOrDefault(x => x.RacePosition == 2);
+                    if (secondPlace != null)
                     {
-                        if (driver.DistanceTo(first) > configuration.WinDistance)
-                        {
-                            UI.Notify($"{driver.ToString()} lose");
-
-                            driver.Lost();
-                            Racers.Remove(driver);
-
-                            if (driver.IsPlayer)
-                            {
-                                IsRacing = false;
-                            }
-                        }
+                        distance = player.DistanceTo(secondPlace.Position);
                     }
                 }
-
-                if (Racers.Count == 1 || !IsRacing)
+                else
                 {
-                    IsRacing = false;
-                    if (Racers.FirstOrDefault(x => x.RacePosition == 1)?.IsPlayer == true)
-                    {
-                        UI.Notify($"You win");
-                        Game.Player.Money += configuration.Money;
-                    }
-                    else
-                    {
-                        UI.Notify($"You lose");
-                        Game.Player.Money -= configuration.Money;
-                    }
+                    distance = player.DistanceTo(Drivers.FirstOrDefault(x => x.RacePosition == 1).Position);
                 }
             }
+
+            return distance;
         }
 
         protected void CalculateStartPositions()
         {
-            foreach (var driver in Racers)
+            foreach (var driver in Drivers)
             {
-                driver.RacePosition = Racers.Count;
-                foreach (var otherDriver in Racers)
+                driver.RacePosition = Drivers.Count;
+                foreach (var otherDriver in Drivers)
                 {
                     if (driver != otherDriver)
                     {
@@ -189,23 +154,92 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        protected void CalculateDriversPosition()
+        private void CalculatePositions()
         {
-            foreach (var racer in Racers)
+            foreach (var driver in Drivers)
             {
-                foreach (var otherRacer in Racers.Where(x => x != racer && racer.DistanceTo(x) < 50f))
+                foreach (var otherRacer in Drivers.Where(x => x != driver && driver.DistanceTo(x.Position) < 50f))
                 {
-                    if (racer.InFront(otherRacer))
+                    if (driver.InFront(otherRacer))
                     {
-                        if (racer.RacePosition > otherRacer.RacePosition)
+                        if (driver.RacePosition > otherRacer.RacePosition)
                         {
-                            int tmp = racer.RacePosition;
-                            racer.RacePosition = otherRacer.RacePosition;
+                            int tmp = driver.RacePosition;
+                            driver.RacePosition = otherRacer.RacePosition;
                             otherRacer.RacePosition = tmp;
                         }
                     }
                 }
             }
+        }
+
+        private void ComputerAI()
+        {
+            // Set first to cruise
+            var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
+            if (!firstPlace.IsPlayer)
+            {
+                if (firstPlace is ITask task)
+                {
+                    task.Cruise();
+                }
+            }
+
+            // Set others to chase first
+            foreach (var driver in Drivers.Where(x => !x.IsPlayer || x.RacePosition != 1))
+            {
+                if (driver is ITask task)
+                {
+                    if (driver.DistanceTo(firstPlace.Position) < 20f)
+                    {
+                        task.Cruise();
+                    }
+                    else
+                    {
+                        task.Chase(firstPlace);
+                    }
+                }
+            }
+        }
+
+        private void Finish()
+        {
+            IsRacing = false;
+            var player = Drivers.FirstOrDefault(x => x.IsPlayer);
+            BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
+            Dispose();
+        }
+
+        private void LoadVehicles()
+        {
+            Drivers.Add(new PlayerDriver(configuration));
+
+            var closest = GetClosestVehicleToPlayer(radius: 20f);
+            if (closest != null)
+            {
+                Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition = 2;
+                Drivers.Add(new ComputerDriver(configuration, closest) { RacePosition = 1 });
+            }
+            else
+            {
+                for (int i = 1; i <= configuration.SpawnCount; i++)
+                {
+                    var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
+                    Drivers.Add(new ComputerDriver(configuration, position));
+                }
+            }
+        }
+
+        private Vehicle GetClosestVehicleToPlayer(float radius)
+        {
+            IList<(float distance, Vehicle vehicle)> vehicles = new List<(float distance, Vehicle vehicle)>();
+            foreach (var vehicle in World.GetNearbyVehicles(Game.Player.Character.Position, radius).Where(x => !x.Driver.IsPlayer && x.IsAlive))
+            {
+                var distance = Vector3.Distance(Game.Player.Character.Position, vehicle.Position);
+                vehicles.Add((distance, vehicle));
+            }
+
+            return vehicles.OrderBy(x => x.distance).FirstOrDefault().vehicle;
         }
     }
 }

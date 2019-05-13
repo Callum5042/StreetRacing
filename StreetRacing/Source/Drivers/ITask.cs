@@ -1,7 +1,6 @@
 ﻿using GTA.Math;
-using StreetRacing.Source.Tasks;
 
-namespace StreetRacing.Source.New.Drivers
+namespace StreetRacing.Source.Drivers
 {
     public interface ITask
     {

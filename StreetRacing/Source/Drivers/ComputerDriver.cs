@@ -1,10 +1,9 @@
 ﻿using GTA;
 using GTA.Math;
 using GTA.Native;
-using StreetRacing.Source.Tasks;
 using System;
 
-namespace StreetRacing.Source.New.Drivers
+namespace StreetRacing.Source.Drivers
 {
     public class ComputerDriver : IDriver, ITask
     {
@@ -24,6 +23,11 @@ namespace StreetRacing.Source.New.Drivers
             Vehicle.AddBlip();
             Vehicle.CurrentBlip.Color = BlipColor.Blue;
             Vehicle.CurrentBlip.IsFlashing = false;
+        }
+
+        public override string ToString()
+        {
+            return Vehicle.FriendlyName;
         }
 
         public ComputerDriver(IConfiguration configuration, Vehicle vehicle)

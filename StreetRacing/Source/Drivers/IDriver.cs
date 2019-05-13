@@ -2,7 +2,7 @@
 using GTA.Math;
 using System;
 
-namespace StreetRacing.Source.New.Drivers
+namespace StreetRacing.Source.Drivers
 {
     public interface IDriver : IDisposable
     {

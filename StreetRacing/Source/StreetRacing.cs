@@ -1,6 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
-using StreetRacing.Source.New.Races;
+using StreetRacing.Source.Races;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,24 +64,27 @@ namespace StreetRacing.Source
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (CurrentRace == null)
+            if (configuration.Active)
             {
-                foreach (var raceStartPoint in raceStartPoints)
+                if (CurrentRace == null)
                 {
-                    if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
+                    foreach (var raceStartPoint in raceStartPoints)
                     {
-                        if (e.KeyCode == Keys.E)
+                        if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
                         {
-                            ClearStartBlips();
-                            CurrentRace = new SprintRace(configuration, raceStartPoint);
+                            if (e.KeyCode == Keys.E)
+                            {
+                                ClearStartBlips();
+                                CurrentRace = new SprintRace(configuration, raceStartPoint);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (e.KeyCode == Keys.E)
+                        else
                         {
-                            ClearStartBlips();
-                            CurrentRace = new DistanceRace(configuration);
+                            if (e.KeyCode == Keys.E)
+                            {
+                                ClearStartBlips();
+                                CurrentRace = new DistanceRace(configuration);
+                            }
                         }
                     }
                 }
