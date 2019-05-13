@@ -76,6 +76,14 @@ namespace StreetRacing.Source
                             CurrentRace = new SprintRace(configuration, raceStartPoint);
                         }
                     }
+                    else
+                    {
+                        if (e.KeyCode == Keys.E)
+                        {
+                            ClearStartBlips();
+                            CurrentRace = new DistanceRace(configuration);
+                        }
+                    }
                 }
             }
         }

@@ -73,6 +73,7 @@
     <Compile Include="Source\New\Drivers\ITask.cs" />
     <Compile Include="Source\New\Drivers\IDriver.cs" />
     <Compile Include="Source\New\Drivers\PlayerDriver.cs" />
+    <Compile Include="Source\New\Races\DistanceRace.cs" />
     <Compile Include="Source\New\Races\IRace.cs" />
     <Compile Include="Source\New\Races\SprintRace.cs" />
     <Compile Include="Source\RaceStart.cs" />

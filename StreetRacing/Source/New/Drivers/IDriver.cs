@@ -1,4 +1,5 @@
-﻿using GTA.Math;
+﻿using GTA;
+using GTA.Math;
 using System;
 
 namespace StreetRacing.Source.New.Drivers
@@ -24,5 +25,7 @@ namespace StreetRacing.Source.New.Drivers
         Vector3 ForwardVector { get; }
 
         void UpdateBlip();
+
+        Vehicle Vehicle { get; }
     }
 }

@@ -55,5 +55,7 @@ namespace StreetRacing.Source.New.Drivers
         public Vector3 Position => Game.Player.Character.Position;
 
         public Vector3 ForwardVector => Game.Player.Character.ForwardVector;
+
+        public Vehicle Vehicle => Game.Player.Character.CurrentVehicle;
     }
 }

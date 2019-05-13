@@ -125,11 +125,6 @@ namespace StreetRacing.Source.New.Races
 
         private void CalculatePositions()
         {
-            // First get position based on checkpoints
-
-
-            // Then get position between cars on the who has is on the same checkpoint
-
             foreach (var driver in Drivers)
             {
                 foreach (var otherRacer in Drivers.Where(x => x != driver && driver.DistanceTo(x.Position) < 50f))
