@@ -144,9 +144,9 @@ namespace StreetRacing.Source.Races
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
+            foreach (var blip in Checkpoints.Select(x => x.Blip))
             {
-                driver.Dispose();
+                blip.Remove();
             }
         }
     }
