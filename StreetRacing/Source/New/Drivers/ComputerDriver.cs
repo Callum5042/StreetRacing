@@ -26,6 +26,23 @@ namespace StreetRacing.Source.New.Drivers
             Vehicle.CurrentBlip.IsFlashing = false;
         }
 
+        public ComputerDriver(IConfiguration configuration, Vehicle vehicle)
+        {
+            this.configuration = configuration;
+
+            Vehicle = vehicle;
+            Vehicle.Driver.Delete();
+
+            var ped = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+            ped.DrivingStyle = (DrivingStyle)drivingStyle;
+            ped.AlwaysKeepTask = true;
+            //ped.DrivingSpeed = 200f;
+
+            Vehicle.AddBlip();
+            Vehicle.CurrentBlip.Color = BlipColor.Blue;
+            Vehicle.CurrentBlip.IsFlashing = false;
+        }
+
         public bool IsPlayer => false;
 
         public int Checkpoint { get; set; }
@@ -65,7 +82,7 @@ namespace StreetRacing.Source.New.Drivers
             if (DriverTask != DriverTask.Cruise)
             {
                 DriverTask = DriverTask.Cruise;
-                Vehicle.Driver.Task.CruiseWithVehicle(Vehicle, 200f);
+                Vehicle.Driver.Task.CruiseWithVehicle(Vehicle, 200f, drivingStyle);
             }
         }
 

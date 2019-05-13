@@ -1,4 +1,5 @@
 ﻿using GTA;
+using GTA.Math;
 using NativeUI;
 using StreetRacing.Source.New.Drivers;
 using System;
@@ -82,7 +83,6 @@ namespace StreetRacing.Source.New.Races
             }
 
             UpdateBlips();
-
             distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, distance / configuration.WinDistance);
         }
 
@@ -194,8 +194,29 @@ namespace StreetRacing.Source.New.Races
         {
             Drivers.Add(new PlayerDriver(configuration));
 
-            var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * 6.0f);
-            Drivers.Add(new ComputerDriver(configuration, position));
+            var closest = GetClosestVehicleToPlayer(radius: 20f);
+            if (closest != null)
+            {
+                Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition = 2;
+                Drivers.Add(new ComputerDriver(configuration, closest) { RacePosition = 1 });
+            }
+            else
+            {
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * 6.0f);
+                Drivers.Add(new ComputerDriver(configuration, position));
+            }
+        }
+
+        private Vehicle GetClosestVehicleToPlayer(float radius)
+        {
+            IList<(float distance, Vehicle vehicle)> vehicles = new List<(float distance, Vehicle vehicle)>();
+            foreach (var vehicle in World.GetNearbyVehicles(Game.Player.Character.Position, radius).Where(x => !x.Driver.IsPlayer && x.IsAlive))
+            {
+                var distance = Vector3.Distance(Game.Player.Character.Position, vehicle.Position);
+                vehicles.Add((distance, vehicle));
+            }
+
+            return vehicles.OrderBy(x => x.distance).FirstOrDefault().vehicle;
         }
     }
 }
