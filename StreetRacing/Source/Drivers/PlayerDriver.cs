@@ -36,7 +36,7 @@ namespace StreetRacing.Source.Drivers
 
         public void Finish()
         {
-            
+            InRace = false;
         }
 
         public bool InFront(IDriver driver)

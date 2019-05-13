@@ -9,16 +9,12 @@ using System.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class DistanceRace : IRace
+    public class DistanceRace : RaceBase
     {
         private readonly IConfiguration configuration;
         private readonly DistanceRaceGui distanceRaceGUI = new DistanceRaceGui();
-        private readonly DateTime startTime = DateTime.Now;
-        private TimeSpan time;
-
-        public IList<IDriver> Drivers { get; protected set; } = new List<IDriver>();
-
-        public DistanceRace(IConfiguration configuration)
+        
+        public DistanceRace(IConfiguration configuration) : base(configuration)
         {
             this.configuration = configuration;
 
@@ -27,89 +23,32 @@ namespace StreetRacing.Source.Races
             UI.Notify($"Race Started: Distance");
         }
 
-        public bool IsRacing { get; protected set; } = true;
-
-        public void Dispose()
+        public override void Tick()
         {
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
-            {
-                driver.Dispose();
-            }
-        }
-
-        public void Tick()
-        {
-            time = startTime.Subtract(DateTime.Now);
-
-            CalculatePositions();
-            ComputerAI();
-
+            base.Tick();
+            
             float distance = GetDistance();
             CheckPlayState(distance);
-
-            DeployPolice();
-            UpdateBlips();
+            
             distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, distance / configuration.WinDistance);
         }
 
         private void CheckPlayState(float distance)
         {
-            foreach (var driver in Drivers.ToList())
+            var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
+            foreach (var driver in Drivers.Where(x => x.RacePosition != 1 && x.InRace))
             {
-                if (driver.RacePosition != 1)
+                if (driver.DistanceTo(firstPlace.Position) > configuration.WinDistance)
                 {
-                    var first = Drivers.FirstOrDefault(x => x.RacePosition == 1);
-                    if (first != null)
-                    {
-                        if (driver.DistanceTo(first.Position) > configuration.WinDistance)
-                        {
-                            UI.Notify($"{driver.ToString()} lose");
-
-                            driver.Finish();
-                            Drivers.Remove(driver);
-
-                            if (driver.IsPlayer)
-                            {
-                                Finish();
-                            }
-                        }
-                    }
-                }
-
-                if (Drivers.Count == 1 || !IsRacing)
-                {
-                    Finish();
-                    if (Drivers.FirstOrDefault(x => x.RacePosition == 1)?.IsPlayer == true)
-                    {
-                        UI.Notify($"You win");
-                        Game.Player.Money += configuration.Money;
-                    }
-                    else
-                    {
-                        UI.Notify($"You lose");
-                        Game.Player.Money -= configuration.Money;
-                    }
+                    UI.Notify($"{driver.ToString()} lose");
+                    driver.Finish();
                 }
             }
-        }
 
-        protected void DeployPolice()
-        {
-            if (configuration.PolicePursuit)
+            // If 1 driver left then finish the race
+            if (Drivers.Count(x => x.InRace) == 1 || !Drivers.FirstOrDefault(x => x.IsPlayer).InRace)
             {
-                var vehicles = World.GetNearbyVehicles(Game.Player.Character.Position, 100f).Where(x => x.Driver.IsInPoliceVehicle);
-                if (vehicles.Any(x => x.IsOnScreen))
-                {
-                    Game.Player.WantedLevel = 1;
-                }
-            }
-        }
-
-        private void UpdateBlips()
-        {
-            foreach (var driver in Drivers.Where(x => !x.IsPlayer))
-            {
-                driver.UpdateBlip();
+                Finish();
             }
         }
 
@@ -136,25 +75,7 @@ namespace StreetRacing.Source.Races
             return distance;
         }
 
-        protected void CalculateStartPositions()
-        {
-            foreach (var driver in Drivers)
-            {
-                driver.RacePosition = Drivers.Count;
-                foreach (var otherDriver in Drivers)
-                {
-                    if (driver != otherDriver)
-                    {
-                        if (driver.InFront(otherDriver))
-                        {
-                            driver.RacePosition--;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void CalculatePositions()
+        protected override void CalculatePositions()
         {
             foreach (var driver in Drivers)
             {
@@ -173,7 +94,7 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        private void ComputerAI()
+        protected override void ComputerAI()
         {
             // Set first to cruise
             var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
@@ -207,7 +128,6 @@ namespace StreetRacing.Source.Races
             IsRacing = false;
             var player = Drivers.FirstOrDefault(x => x.IsPlayer);
             BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
-            Dispose();
         }
 
         private void LoadVehicles()

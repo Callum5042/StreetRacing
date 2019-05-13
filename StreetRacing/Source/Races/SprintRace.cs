@@ -10,18 +10,14 @@ using System.Xml.Linq;
 
 namespace StreetRacing.Source.Races
 {
-    public class SprintRace : IRace
+    public class SprintRace : RaceBase
     {
         private readonly IConfiguration configuration;
         private readonly SprintGui sprintGUI = new SprintGui();
-        private readonly DateTime startTime = DateTime.Now;
-        private TimeSpan time;
 
         public IList<Checkpoint> Checkpoints { get; protected set; } = new List<Checkpoint>();
 
-        public IList<IDriver> Drivers { get; protected set; } = new List<IDriver>();
-
-        public SprintRace(IConfiguration configuration, RaceStart raceStart)
+        public SprintRace(IConfiguration configuration, RaceStart raceStart) : base(configuration)
         {
             this.configuration = configuration;
 
@@ -61,43 +57,16 @@ namespace StreetRacing.Source.Races
                 });
             }
         }
-
-        public bool IsRacing { get; protected set; } = true;
-
-        public void Tick()
+        
+        public override void Tick()
         {
-            time = startTime.Subtract(DateTime.Now);
+            base.Tick();
 
-            foreach (var driver in Drivers)
-            {
-                driver.UpdateBlip();
-            }
-
-            CalculatePositions();
-            ComputerAI();
             CheckCheckpointsBlips();
             sprintGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time);
         }
 
-        protected void CalculateStartPositions()
-        {
-            foreach (var driver in Drivers)
-            {
-                driver.RacePosition = Drivers.Count;
-                foreach (var otherDriver in Drivers)
-                {
-                    if (driver != otherDriver)
-                    {
-                        if (driver.InFront(otherDriver))
-                        {
-                            driver.RacePosition--;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void CalculatePositions()
+        protected override void CalculatePositions()
         {
             foreach (var driver in Drivers)
             {
@@ -116,7 +85,7 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        private void ComputerAI()
+        protected override void ComputerAI()
         {
             foreach (var driver in Drivers.Where(x => !x.IsPlayer && x.InRace))
             {
@@ -157,7 +126,6 @@ namespace StreetRacing.Source.Races
                     }
                 }
 
-                UI.ShowSubtitle("Checkpoint: " + player.Checkpoint);
                 if (player.Checkpoint == Checkpoints.Max(x => x.Number))
                 {
                     player.Finish();
@@ -173,13 +141,9 @@ namespace StreetRacing.Source.Races
             BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
         }
         
-        public void Dispose()
+        public override void Dispose()
         {
-            foreach (var blip in Checkpoints.Select(x => x.Blip))
-            {
-                blip.Remove();
-            }
-
+            base.Dispose();
             foreach (var driver in Drivers.Where(x => !x.IsPlayer))
             {
                 driver.Dispose();
