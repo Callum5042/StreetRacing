@@ -40,8 +40,6 @@ namespace StreetRacing.Source
 
         private void OnTick(object sender, EventArgs e)
         {
-            UI.ShowSubtitle(configuration.Active.ToString());
-
             if (CurrentRace?.IsRacing == true)
             {
                 CurrentRace.Tick();
@@ -54,11 +52,14 @@ namespace StreetRacing.Source
             }
             else
             {
-                foreach (var raceStartPoint in raceStartPoints)
-                {
-                    if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
+                if (CanStart())
+                { 
+                    foreach (var raceStartPoint in raceStartPoints)
                     {
-                        UI.ShowSubtitle("Start race");
+                        if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
+                        {
+                            UI.ShowSubtitle("Start race");
+                        }
                     }
                 }
             }
@@ -68,7 +69,7 @@ namespace StreetRacing.Source
         {
             if (configuration.Active)
             {
-                if (CurrentRace == null)
+                if (CanStart())
                 {
                     foreach (var raceStartPoint in raceStartPoints)
                     {
@@ -148,6 +149,11 @@ namespace StreetRacing.Source
                 raceStart.Blip.Name = "Street Race";
                 raceStart.Blip.IsShortRange = true;
             }
+        }
+
+        private bool CanStart()
+        {
+            return (CurrentRace == null && Game.Player.Character.IsInVehicle());
         }
     }
 }

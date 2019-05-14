@@ -27,5 +27,7 @@ namespace StreetRacing.Source.Drivers
         void UpdateBlip();
 
         Vehicle Vehicle { get; }
+
+        void CheckVehicleState();
     }
 }

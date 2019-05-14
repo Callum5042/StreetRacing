@@ -5,7 +5,7 @@ using System;
 
 namespace StreetRacing.Source.Drivers
 {
-    public class ComputerDriver : IDriver, ITask
+    public class ComputerDriver : DriverBase, ITask
     {
         private readonly IConfiguration configuration;
         private const int drivingStyle = 262204;
@@ -15,14 +15,21 @@ namespace StreetRacing.Source.Drivers
             this.configuration = configuration;
 
             Vehicle = World.CreateVehicle(VehicleHash.Adder, position, Game.Player.Character.Heading);
-            var ped = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+            Start(Vehicle);
+        }
+
+        protected ComputerDriver(IConfiguration configuration) => this.configuration = configuration;
+
+        protected void Start(Vehicle vehicle)
+        {
+            var ped = vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
             ped.DrivingStyle = (DrivingStyle)drivingStyle;
             ped.AlwaysKeepTask = true;
             ped.DrivingSpeed = 200f;
 
-            Vehicle.AddBlip();
-            Vehicle.CurrentBlip.Color = BlipColor.Blue;
-            Vehicle.CurrentBlip.IsFlashing = false;
+            vehicle.AddBlip();
+            vehicle.CurrentBlip.Color = BlipColor.Blue;
+            vehicle.CurrentBlip.IsFlashing = false;
         }
 
         public override string ToString()
@@ -30,50 +37,16 @@ namespace StreetRacing.Source.Drivers
             return Vehicle.FriendlyName;
         }
 
-        public ComputerDriver(IConfiguration configuration, Vehicle vehicle)
-        {
-            this.configuration = configuration;
-
-            Vehicle = vehicle;
-            Vehicle.Driver.Delete();
-
-            var ped = Vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-            ped.DrivingStyle = (DrivingStyle)drivingStyle;
-            ped.AlwaysKeepTask = true;
-            //ped.DrivingSpeed = 200f;
-
-            Vehicle.AddBlip();
-            Vehicle.CurrentBlip.Color = BlipColor.Blue;
-            Vehicle.CurrentBlip.IsFlashing = false;
-        }
-
-        public bool IsPlayer => false;
-
-        public int Checkpoint { get; set; }
-
-        public int RacePosition { get; set; }
-
-        public bool InRace { get; protected set; } = true;
-
-        public Vector3 Position => Vehicle.Position;
-
-        public Vector3 ForwardVector => Vehicle.ForwardVector;
-
+        public override bool IsPlayer => false;
+        
         public DriverTask DriverTask { get; protected set; } = DriverTask.None;
 
-        public Vehicle Vehicle { get; protected set; }
-
-        public void Dispose()
+        public override void Dispose()
         {
             Vehicle.Driver.Delete();
             Vehicle.Delete();
             Vehicle.CurrentBlip.Remove();
             InRace = false;
-        }
-
-        public float DistanceTo(Vector3 position)
-        {
-            return Vehicle.Position.DistanceTo(position);
         }
 
         public void DriveTo(Vector3 position)
@@ -90,23 +63,12 @@ namespace StreetRacing.Source.Drivers
             }
         }
 
-        public void Finish()
+        public override void Finish()
         {
             Dispose();
         }
 
-        public bool InFront(IDriver driver)
-        {
-            if (driver == null)
-            {
-                throw new ArgumentNullException(nameof(driver));
-            }
-
-            var heading = Vehicle.Position - driver.Position;
-            return Vector3.Dot(heading.Normalized, driver.ForwardVector.Normalized) > 0;
-        }
-
-        public void UpdateBlip()
+        public override void UpdateBlip()
         {
             Vehicle.CurrentBlip.ShowNumber(RacePosition);
         }

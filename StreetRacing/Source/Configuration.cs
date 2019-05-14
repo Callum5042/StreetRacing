@@ -1,5 +1,4 @@
-﻿using GTA;
-using GTA.Math;
+﻿using GTA.Math;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -105,12 +104,7 @@ namespace StreetRacing.Source
 
             doc.Save("scripts/streetracing/checkpoints.xml");
         }
-
-        public void LoadCheckpoints()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Keys MenuKey { get; protected set; } = Keys.F8;
 
         public Keys StartNearbyKey { get; protected set; } = Keys.E;

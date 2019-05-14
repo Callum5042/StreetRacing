@@ -40,7 +40,11 @@ namespace StreetRacing.Source.Races
             {
                 if (driver.DistanceTo(firstPlace.Position) > configuration.WinDistance)
                 {
-                    UI.Notify($"{driver.ToString()} lose");
+                    if (!driver.IsPlayer)
+                    {
+                        UI.Notify($"{driver.ToString()} lose");
+                    }
+
                     driver.Finish();
                 }
             }
@@ -138,7 +142,7 @@ namespace StreetRacing.Source.Races
             if (closest != null)
             {
                 Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition = 2;
-                Drivers.Add(new ComputerDriver(configuration, closest) { RacePosition = 1 });
+                Drivers.Add(new NearbyDriver(configuration, closest) { RacePosition = 1 });
             }
             else
             {

@@ -67,6 +67,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Drivers\DriverBase.cs" />
+    <Compile Include="Source\Drivers\NearbyDriver.cs" />
     <Compile Include="Source\Gui\DistanceGui.cs" />
     <Compile Include="Source\Gui\SprintGui.cs" />
     <Compile Include="Source\IConfiguration.cs" />

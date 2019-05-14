@@ -37,6 +37,15 @@ namespace StreetRacing.Source.Races
             UpdateBlips();
             ComputerAI();
             DeployPolice();
+            CheckVehicleStates();
+        }
+
+        private void CheckVehicleStates()
+        {
+            foreach (var driver in Drivers)
+            {
+                driver.CheckVehicleState();
+            }
         }
 
         private void UpdateBlips()
