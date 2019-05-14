@@ -129,6 +129,11 @@ namespace StreetRacing.Source.Races
 
         private void Finish()
         {
+            foreach (var driver in Drivers.Where(x => x.InRace))
+            {
+                driver.Finish();
+            }
+
             IsRacing = false;
             var player = Drivers.FirstOrDefault(x => x.IsPlayer);
             BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
