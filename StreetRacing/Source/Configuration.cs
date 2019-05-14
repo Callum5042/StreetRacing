@@ -89,19 +89,6 @@ namespace StreetRacing.Source
 
         public void SaveCheckpoints(IEnumerable<Vector3> checkpoints)
         {
-            //var doc = new XDocument();
-            //var root = new XElement("root");
-            //doc.Add(root);
-
-            //foreach (var checkpoint in checkpoints)
-            //{
-            //    var element = new XElement("checkpoint");
-            //    element.Add(new XAttribute("X", checkpoint.X));
-            //    element.Add(new XAttribute("Y", checkpoint.Y));
-            //    element.Add(new XAttribute("Z", checkpoint.Z));
-            //    root.Add(element);
-            //}
-
             XDocument document;
             try
             {
@@ -115,6 +102,7 @@ namespace StreetRacing.Source
             }
 
             var race = new XElement("race");
+            race.Add(new XAttribute("name", Guid.NewGuid()));
             foreach (var checkpoint in checkpoints)
             {
                 var element = new XElement("checkpoint");
