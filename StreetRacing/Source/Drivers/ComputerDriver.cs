@@ -30,6 +30,16 @@ namespace StreetRacing.Source.Drivers
             vehicle.AddBlip();
             vehicle.CurrentBlip.Color = BlipColor.Blue;
             vehicle.CurrentBlip.IsFlashing = false;
+
+            if (configuration.MaxMods)
+            {
+                Vehicle.InstallModKit();
+                foreach (VehicleMod value in Enum.GetValues(typeof(VehicleMod)))
+                {
+                    int modCount = Vehicle.GetModCount(value);
+                    Vehicle.SetMod(value, modCount - 1, variations: true);
+                }
+            }
         }
 
         public override string ToString()

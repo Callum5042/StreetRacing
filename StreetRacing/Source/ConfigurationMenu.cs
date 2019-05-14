@@ -20,6 +20,7 @@ namespace StreetRacing.Source
             menuPool.Add(mainMenu);
 
             AddCheckbox(nameof(Active), Active, x => Active = x);
+            AddCheckbox("Max mods", MaxMods, x => MaxMods = x);
             AddCheckbox("Police Pursit", PolicePursuit, x => PolicePursuit = x);
             AddMenuSpawnCount(mainMenu);
 
