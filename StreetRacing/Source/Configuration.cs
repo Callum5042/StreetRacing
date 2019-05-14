@@ -87,22 +87,45 @@ namespace StreetRacing.Source
             }
         }
 
-        public void SaveCheckpoints(IList<Vector3> checkpoints)
+        public void SaveCheckpoints(IEnumerable<Vector3> checkpoints)
         {
-            var doc = new XDocument();
-            var root = new XElement("root");
-            doc.Add(root);
+            //var doc = new XDocument();
+            //var root = new XElement("root");
+            //doc.Add(root);
 
+            //foreach (var checkpoint in checkpoints)
+            //{
+            //    var element = new XElement("checkpoint");
+            //    element.Add(new XAttribute("X", checkpoint.X));
+            //    element.Add(new XAttribute("Y", checkpoint.Y));
+            //    element.Add(new XAttribute("Z", checkpoint.Z));
+            //    root.Add(element);
+            //}
+
+            XDocument document;
+            try
+            {
+                document = XDocument.Load("scripts/streetracing/checkpoints.xml");
+            }
+            catch (FileNotFoundException)
+            {
+                document = new XDocument();
+                var root = new XElement("root");
+                document.Add(root);
+            }
+
+            var race = new XElement("race");
             foreach (var checkpoint in checkpoints)
             {
                 var element = new XElement("checkpoint");
                 element.Add(new XAttribute("X", checkpoint.X));
                 element.Add(new XAttribute("Y", checkpoint.Y));
                 element.Add(new XAttribute("Z", checkpoint.Z));
-                root.Add(element);
+                race.Add(element);
             }
 
-            doc.Save("scripts/streetracing/checkpoints.xml");
+            document.Root.Add(race);
+            document.Save("scripts/streetracing/checkpoints.xml");
         }
         
         public Keys MenuKey { get; protected set; } = Keys.F8;

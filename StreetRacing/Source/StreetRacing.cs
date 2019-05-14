@@ -18,6 +18,8 @@ namespace StreetRacing.Source
 
         public static IRace CurrentRace { get; protected set; }
 
+        public static IList<Checkpoint> RecordedCheckpoints { get; set; } = new List<Checkpoint>();
+
         public StreetRacing()
         {
             Tick += OnTick;
@@ -36,6 +38,11 @@ namespace StreetRacing.Source
             UI.Notify("StreetRacing aborted");
             CurrentRace?.Dispose();
             ClearStartBlips();
+
+            foreach (var blip in RecordedCheckpoints.Select(x => x.Blip))
+            {
+                blip.Remove();
+            }
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -53,13 +60,55 @@ namespace StreetRacing.Source
             else
             {
                 if (CanStart())
-                { 
+                {
                     foreach (var raceStartPoint in raceStartPoints)
                     {
                         if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
                         {
                             UI.ShowSubtitle("Start race");
                         }
+                    }
+                }
+            }
+
+            // Record Track
+            RecordTrack();
+        }
+
+        private void RecordTrack()
+        {
+            if (configuration.RecordTrack)
+            {
+                if (!RecordedCheckpoints.Any())
+                {
+                    var position = Game.Player.Character.Position;
+                    var blip = World.CreateBlip(position);
+                    blip.ShowNumber(1);
+
+                    RecordedCheckpoints.Add(new Checkpoint()
+                    {
+                        Position = position,
+                        Blip = blip,
+                        Number = 1
+                    });
+                }
+                else
+                {
+                    var lastCheckpoint = RecordedCheckpoints.Last();
+                    var position = Game.Player.Character.Position;
+
+                    if (lastCheckpoint.Position.DistanceTo(position) > 50f)
+                    {
+                        var number = lastCheckpoint.Number + 1;
+                        var blip = World.CreateBlip(position);
+                        blip.ShowNumber(number);
+
+                        RecordedCheckpoints.Add(new Checkpoint()
+                        {
+                            Position = position,
+                            Blip = blip,
+                            Number = number
+                        });
                     }
                 }
             }

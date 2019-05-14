@@ -2,6 +2,7 @@
 using NativeUI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace StreetRacing.Source
@@ -20,16 +21,20 @@ namespace StreetRacing.Source
 
             AddCheckbox(nameof(Active), Active, x => Active = x);
             AddCheckbox("Police Pursit", PolicePursuit, x => PolicePursuit = x);
+            AddMenuSpawnCount(mainMenu);
 
             AddButton("Save configuration", () => 
             {
                 UI.Notify("Saved config");
                 Save();
             });
-            
-            // Old
-            AddMenuSpawnCount(mainMenu);
-            AddMenuAnotherMenu(mainMenu);
+
+            AddCheckbox("Record Track", RecordTrack, x => RecordTrack = x);
+            AddButton("Save track", () =>
+            {
+                UI.Notify("Saved track");
+                SaveCheckpoints(StreetRacing.RecordedCheckpoints.Select(x => x.Position));
+            });
             
             menuPool.RefreshIndex();
         }
@@ -59,26 +64,7 @@ namespace StreetRacing.Source
                 }
             };
         }
-
-        public void AddMenuAnotherMenu(UIMenu menu)
-        {
-            var submenu = menuPool.AddSubMenu(menu, "Customize");
-            //AddRecordTrackToggle(submenu);
-        }
-
-        //private void AddRecordTrackToggle(UIMenu menu)
-        //{
-        //    var newitem = new UIMenuCheckboxItem("Record Track", RecordTrack);
-        //    menu.AddItem(newitem);
-        //    menu.OnCheckboxChange += (sender, item, @checked) =>
-        //    {
-        //        if (item == newitem)
-        //        {
-        //            RecordTrack = @checked;
-        //        }
-        //    };
-        //}
-
+        
         private void AddCheckbox(string name, bool value, Func<bool, bool> func)
         {
             var newitem = new UIMenuCheckboxItem(name, value);
