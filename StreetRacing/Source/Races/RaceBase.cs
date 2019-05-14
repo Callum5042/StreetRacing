@@ -56,7 +56,7 @@ namespace StreetRacing.Source.Races
             }
         }
 
-        protected void CalculateStartPositions()
+        protected virtual void CalculateStartPositions()
         {
             foreach (var driver in Drivers)
             {

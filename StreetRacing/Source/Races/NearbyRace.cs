@@ -26,6 +26,11 @@ namespace StreetRacing.Source.Races
             Drivers.Add(new NearbyDriver(configuration, vehicle) { RacePosition = 1 });
         }
 
+        protected override void CalculateStartPositions()
+        {
+            
+        }
+
         private Vehicle GetClosestVehicleToPlayer(float radius)
         {
             IList<(float distance, Vehicle vehicle)> vehicles = new List<(float distance, Vehicle vehicle)>();

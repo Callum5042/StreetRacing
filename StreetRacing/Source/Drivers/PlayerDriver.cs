@@ -20,10 +20,12 @@ namespace StreetRacing.Source.Drivers
             if (RacePosition == 1)
             {
                 UI.Notify("You win");
+                Game.Player.Money += configuration.Money;
             }
             else
             {
                 UI.Notify("You lose");
+                Game.Player.Money -= configuration.Money;
             }
         }
 

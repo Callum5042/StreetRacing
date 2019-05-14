@@ -1,7 +1,9 @@
-﻿using GTA.Math;
+﻿using GTA;
+using GTA.Math;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
@@ -102,7 +104,7 @@ namespace StreetRacing.Source
             }
 
             var race = new XElement("race");
-            race.Add(new XAttribute("name", Guid.NewGuid()));
+            race.Add(new XAttribute("name", World.GetStreetName(Game.Player.Character.Position)));
             foreach (var checkpoint in checkpoints)
             {
                 var element = new XElement("checkpoint");
@@ -114,6 +116,12 @@ namespace StreetRacing.Source
 
             document.Root.Add(race);
             document.Save("scripts/streetracing/checkpoints.xml");
+
+            // Clear checkpoints
+            foreach (var blip in StreetRacing.RecordedCheckpoints.Select(x => x.Blip))
+            {
+                blip.Remove();
+            }
         }
         
         public Keys MenuKey { get; protected set; } = Keys.F8;
