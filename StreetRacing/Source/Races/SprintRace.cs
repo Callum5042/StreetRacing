@@ -30,9 +30,11 @@ namespace StreetRacing.Source.Races
         private void LoadDrivers(IConfiguration configuration)
         {
             Drivers.Add(new PlayerDriver(configuration));
-
-            var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * 6.0f);
-            Drivers.Add(new ComputerDriver(configuration, position));
+            for (int i = 1; i <= configuration.SpawnCount; i++)
+            {
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
+                Drivers.Add(new ComputerDriver(configuration, position));
+            }
         }
 
         private void LoadRaceFromFile(RaceStart raceStart)

@@ -132,15 +132,14 @@ namespace StreetRacing.Source
 
                 if (e.KeyCode == configuration.StartNearbyKey && CanStart())
                 {
-                    ClearStartBlips();
                     try
                     {
                         CurrentRace = new NearbyRace(configuration);
+                        ClearStartBlips();
                     }
                     catch (InvalidOperationException)
                     {
                         CurrentRace.Dispose();
-                        LoadStartBlips();
                         CurrentRace = null;
                     }
                 }
