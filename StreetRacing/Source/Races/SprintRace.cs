@@ -105,7 +105,6 @@ namespace StreetRacing.Source.Races
                         }
                         else
                         {
-                            task.Cruise();
                             driver.Finish();
                         }
                     }
