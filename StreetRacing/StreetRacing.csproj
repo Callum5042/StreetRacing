@@ -79,6 +79,7 @@
     <Compile Include="Source\Drivers\PlayerDriver.cs" />
     <Compile Include="Source\Races\DistanceRace.cs" />
     <Compile Include="Source\Races\IRace.cs" />
+    <Compile Include="Source\Races\NearbyRace.cs" />
     <Compile Include="Source\Races\RaceBase.cs" />
     <Compile Include="Source\Races\SprintRace.cs" />
     <Compile Include="Source\RaceStart.cs" />

@@ -118,27 +118,37 @@ namespace StreetRacing.Source
         {
             if (configuration.Active)
             {
-                if (CanStart())
+                foreach (var raceStartPoint in raceStartPoints)
                 {
-                    foreach (var raceStartPoint in raceStartPoints)
+                    if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
                     {
-                        if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
+                        if (e.KeyCode == configuration.StartNearbyKey && CanStart())
                         {
-                            if (e.KeyCode == Keys.E)
-                            {
-                                ClearStartBlips();
-                                CurrentRace = new SprintRace(configuration, raceStartPoint);
-                            }
-                        }
-                        else
-                        {
-                            if (e.KeyCode == Keys.E)
-                            {
-                                ClearStartBlips();
-                                CurrentRace = new DistanceRace(configuration);
-                            }
+                            ClearStartBlips();
+                            CurrentRace = new SprintRace(configuration, raceStartPoint);
                         }
                     }
+                }
+
+                if (e.KeyCode == configuration.StartNearbyKey && CanStart())
+                {
+                    ClearStartBlips();
+                    try
+                    {
+                        CurrentRace = new NearbyRace(configuration);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        CurrentRace.Dispose();
+                        LoadStartBlips();
+                        CurrentRace = null;
+                    }
+                }
+
+                if (e.KeyCode == configuration.StartSpawnKey && CanStart())
+                {
+                    ClearStartBlips();
+                    CurrentRace = new DistanceRace(configuration);
                 }
             }
         }

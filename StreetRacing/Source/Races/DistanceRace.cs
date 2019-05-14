@@ -11,7 +11,7 @@ namespace StreetRacing.Source.Races
 {
     public class DistanceRace : RaceBase
     {
-        private readonly IConfiguration configuration;
+        protected readonly IConfiguration configuration;
         private readonly DistanceRaceGui distanceRaceGUI = new DistanceRaceGui();
         
         public DistanceRace(IConfiguration configuration) : base(configuration)
@@ -139,36 +139,14 @@ namespace StreetRacing.Source.Races
             BigMessageThread.MessageInstance.ShowRankupMessage("Finish", time.ToString(@"mm\:ss\:fff"), player.RacePosition);
         }
 
-        private void LoadVehicles()
+        protected virtual void LoadVehicles()
         {
             Drivers.Add(new PlayerDriver(configuration));
-
-            var closest = GetClosestVehicleToPlayer(radius: 20f);
-            if (closest != null)
+            for (int i = 1; i <= configuration.SpawnCount; i++)
             {
-                Drivers.FirstOrDefault(x => x.IsPlayer).RacePosition = 2;
-                Drivers.Add(new NearbyDriver(configuration, closest) { RacePosition = 1 });
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
+                Drivers.Add(new ComputerDriver(configuration, position));
             }
-            else
-            {
-                for (int i = 1; i <= configuration.SpawnCount; i++)
-                {
-                    var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
-                    Drivers.Add(new ComputerDriver(configuration, position));
-                }
-            }
-        }
-
-        private Vehicle GetClosestVehicleToPlayer(float radius)
-        {
-            IList<(float distance, Vehicle vehicle)> vehicles = new List<(float distance, Vehicle vehicle)>();
-            foreach (var vehicle in World.GetNearbyVehicles(Game.Player.Character.Position, radius).Where(x => !x.Driver.IsPlayer && x.IsAlive))
-            {
-                var distance = Vector3.Distance(Game.Player.Character.Position, vehicle.Position);
-                vehicles.Add((distance, vehicle));
-            }
-
-            return vehicles.OrderBy(x => x.distance).FirstOrDefault().vehicle;
         }
     }
 }
