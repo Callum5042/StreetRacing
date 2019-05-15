@@ -88,7 +88,6 @@
     <Compile Include="Source\StreetRacing.cs" />
     <Compile Include="Source\Drivers\DriverTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\TrackMaker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
