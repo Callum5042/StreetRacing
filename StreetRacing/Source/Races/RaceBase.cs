@@ -35,9 +35,17 @@ namespace StreetRacing.Source.Races
 
             CalculatePositions();
             UpdateBlips();
-            //ComputerAI();
+            ComputerAI();
             DeployPolice();
             CheckVehicleStates();
+
+            foreach (var driverOut in Drivers.Where(x => !x.InRace))
+            {
+                foreach (var driver in Drivers.Where(x => x.RacePosition > driverOut.RacePosition))
+                {
+                    driver.RacePosition--;
+                }
+            }
         }
 
         private void CheckVehicleStates()

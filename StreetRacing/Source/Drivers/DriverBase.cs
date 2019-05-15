@@ -25,11 +25,13 @@ namespace StreetRacing.Source.Drivers
             if (!Vehicle.IsAlive)
             {
                 InRace = false;
+                Vehicle.CurrentBlip.Remove();
             }
 
             if (!Vehicle.Driver.IsAlive)
             {
                 InRace = false;
+                Vehicle.CurrentBlip.Remove();
             }
         }
 
