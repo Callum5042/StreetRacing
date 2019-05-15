@@ -143,5 +143,39 @@ namespace StreetRacing.Source
         public bool PolicePursuit { get; protected set; } = true;
 
         public bool RecordTrack { get; protected set; }
+
+        public IList<RaceStart> RaceStartPoints { get; protected set; } =  new List<RaceStart>();
+
+        public void LoadRaces()
+        {
+            try
+            {
+                var document = XDocument.Load("scripts/streetracing/checkpoints.xml");
+                foreach (XElement raceElement in document.Descendants().Where(x => x.Name == "race"))
+                {
+                    var firstCheckpoint = raceElement.Element("checkpoint");
+                    var xCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "X").Value);
+                    var yCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "Y").Value);
+                    var zCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "Z").Value);
+
+                    var position = new Vector3(xCoord, yCoord, zCoord);
+                    var blip = World.CreateBlip(position);
+                    blip.Sprite = BlipSprite.RaceCar;
+                    blip.Name = "Street Race";
+                    blip.IsShortRange = true;
+
+                    RaceStartPoints.Add(new RaceStart()
+                    {
+                        Name = raceElement.Attributes().FirstOrDefault(x => x.Name == "name").Value,
+                        Position = position,
+                        Blip = blip
+                    });
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                UI.Notify("Could not find file: " + ex.FileName);
+            }
+        }
     }
 }

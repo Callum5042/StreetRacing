@@ -35,6 +35,7 @@ namespace StreetRacing.Source
             {
                 UI.Notify("Saved track");
                 SaveCheckpoints(StreetRacing.RecordedCheckpoints.Select(x => x.Position));
+                LoadRaces();
             });
             
             menuPool.RefreshIndex();

@@ -31,5 +31,9 @@ namespace StreetRacing.Source
         bool RecordTrack { get; }
 
         void SaveCheckpoints(IEnumerable<Vector3> checkpoints);
+
+        void LoadRaces();
+
+        IList<RaceStart> RaceStartPoints { get; }
     }
 }

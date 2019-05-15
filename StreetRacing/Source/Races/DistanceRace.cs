@@ -148,7 +148,7 @@ namespace StreetRacing.Source.Races
             Drivers.Add(new PlayerDriver(configuration));
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
-                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (20.0f * i));
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6f * i));
                 Drivers.Add(new ComputerDriver(configuration, position));
             }
         }

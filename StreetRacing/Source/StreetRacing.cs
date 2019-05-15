@@ -14,7 +14,6 @@ namespace StreetRacing.Source
     public class StreetRacing : Script
     {
         private readonly IConfiguration configuration = new ConfigurationMenu();
-        private readonly IList<RaceStart> raceStartPoints = new List<RaceStart>();
 
         public static IRace CurrentRace { get; protected set; }
 
@@ -29,7 +28,7 @@ namespace StreetRacing.Source
             Tick += configMenu.OnTick;
             KeyUp += configMenu.OnKeyUp;
 
-            LoadRaces();
+            configuration.LoadRaces();
             StartMessage();
         }
 
@@ -61,7 +60,7 @@ namespace StreetRacing.Source
             {
                 if (CanStart())
                 {
-                    foreach (var raceStartPoint in raceStartPoints)
+                    foreach (var raceStartPoint in configuration.RaceStartPoints)
                     {
                         if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
                         {
@@ -118,7 +117,7 @@ namespace StreetRacing.Source
         {
             if (configuration.Active)
             {
-                foreach (var raceStartPoint in raceStartPoints)
+                foreach (var raceStartPoint in configuration.RaceStartPoints)
                 {
                     if (Game.Player.Character.Position.DistanceTo(raceStartPoint.Position) < 20f)
                     {
@@ -157,42 +156,10 @@ namespace StreetRacing.Source
             var assembly = Assembly.GetExecutingAssembly().GetName();
             UI.Notify($"{assembly.Name} has loaded: v{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}");
         }
-
-        private void LoadRaces()
-        {
-            try
-            {
-                var document = XDocument.Load("scripts/streetracing/checkpoints.xml");
-                foreach (XElement raceElement in document.Descendants().Where(x => x.Name == "race"))
-                {
-                    var firstCheckpoint = raceElement.Element("checkpoint");
-                    var xCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "X").Value);
-                    var yCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "Y").Value);
-                    var zCoord = float.Parse(firstCheckpoint.Attributes().FirstOrDefault(x => x.Name == "Z").Value);
-
-                    var position = new Vector3(xCoord, yCoord, zCoord);
-                    var blip = World.CreateBlip(position);
-                    blip.Sprite = BlipSprite.RaceCar;
-                    blip.Name = "Street Race";
-                    blip.IsShortRange = true;
-
-                    raceStartPoints.Add(new RaceStart()
-                    {
-                        Name = raceElement.Attributes().FirstOrDefault(x => x.Name == "name").Value,
-                        Position = position,
-                        Blip = blip
-                    });
-                }
-            }
-            catch (FileNotFoundException ex)
-            {
-                UI.Notify("Could not find file: " + ex.FileName);
-            }
-        }
-
+        
         private void ClearStartBlips()
         {
-            foreach (var blip in raceStartPoints.Select(x => x.Blip))
+            foreach (var blip in configuration.RaceStartPoints.Select(x => x.Blip))
             {
                 blip.Remove();
             }
@@ -200,7 +167,7 @@ namespace StreetRacing.Source
 
         private void LoadStartBlips()
         {
-            foreach (var raceStart in raceStartPoints)
+            foreach (var raceStart in configuration.RaceStartPoints)
             {
                 raceStart.Blip = World.CreateBlip(raceStart.Position);
                 raceStart.Blip.Sprite = BlipSprite.RaceCar;
