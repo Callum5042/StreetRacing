@@ -26,14 +26,19 @@ namespace StreetRacing.Source.Races
         public override void Tick()
         {
             base.Tick();
-            
-            float distance = GetDistance();
-            CheckPlayState(distance);
-            
-            distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, distance / configuration.WinDistance);
+            CheckPlayState();
+
+            try
+            {
+                distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, GetDistance() / configuration.WinDistance);
+            }
+            catch (DivideByZeroException)
+            {
+                distanceRaceGUI.Draw(Drivers.FirstOrDefault(x => x.IsPlayer)?.RacePosition, time, 1f);
+            }
         }
 
-        private void CheckPlayState(float distance)
+        private void CheckPlayState()
         {
             var firstPlace = Drivers.FirstOrDefault(x => x.RacePosition == 1);
             foreach (var driver in Drivers.Where(x => x.RacePosition != 1 && x.InRace))
@@ -59,7 +64,6 @@ namespace StreetRacing.Source.Races
         private float GetDistance()
         {
             var player = Drivers.FirstOrDefault(x => x.IsPlayer);
-            float distance = 0;
             if (player != null)
             {
                 if (player.RacePosition == 1)
@@ -67,16 +71,16 @@ namespace StreetRacing.Source.Races
                     var secondPlace = Drivers.FirstOrDefault(x => x.RacePosition == 2);
                     if (secondPlace != null)
                     {
-                        distance = player.DistanceTo(secondPlace.Position);
+                        return player.DistanceTo(secondPlace.Position);
                     }
                 }
                 else
                 {
-                    distance = player.DistanceTo(Drivers.FirstOrDefault(x => x.RacePosition == 1).Position);
+                    return player.DistanceTo(Drivers.FirstOrDefault(x => x.RacePosition == 1).Position);
                 }
             }
 
-            return distance;
+            return configuration.WinDistance;
         }
 
         protected override void CalculatePositions()
@@ -144,7 +148,7 @@ namespace StreetRacing.Source.Races
             Drivers.Add(new PlayerDriver(configuration));
             for (int i = 1; i <= configuration.SpawnCount; i++)
             {
-                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (6.0f * i));
+                var position = Game.Player.Character.Position + (Game.Player.Character.ForwardVector * (20.0f * i));
                 Drivers.Add(new ComputerDriver(configuration, position));
             }
         }

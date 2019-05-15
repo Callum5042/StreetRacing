@@ -35,7 +35,7 @@ namespace StreetRacing.Source.Races
 
             CalculatePositions();
             UpdateBlips();
-            ComputerAI();
+            //ComputerAI();
             DeployPolice();
             CheckVehicleStates();
         }
