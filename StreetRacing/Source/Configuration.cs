@@ -12,7 +12,7 @@ namespace StreetRacing.Source
 {
     public class Configuration : IConfiguration
     {
-        private readonly string configFilePath = "scripts/streetracing-config.xml";
+        private readonly string configFilePath = "scripts/streetracing/config.xml";
 
         public void Load()
         {
